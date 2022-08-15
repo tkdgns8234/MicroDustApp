@@ -4,16 +4,103 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/teal_700"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textViewMain"
+        android:id="@+id/tv_location"
+        style="@style/my_textView_style_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginTop="100dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="천안시 불당동" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_location"
+        tools:text="02:10 PM" />
+
+    <ImageView
+        android:id="@+id/iv_emoticon"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/good"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_time"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_grade"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_emoticon"
+        tools:text="좋음" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_grade"
+        tools:text="공기가 아주 맑아요 외출합시다 !__!" />
+
+    <ProgressBar
+        android:id="@+id/micro_dust_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:paddingHorizontal="10dp"
+        android:progressDrawable="@drawable/item_progressbar_background"
+        app:layout_constraintBottom_toTopOf="@id/listView_air_pollution"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:progress="30" />
+
+    <TextView
+        android:id="@+id/micro_dust_progressbar_text"
+        style="@style/my_textView_style_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/micro_dust_progressbar"
+        app:layout_constraintEnd_toEndOf="@id/micro_dust_progressbar"
+        app:layout_constraintTop_toTopOf="@id/micro_dust_progressbar"
+        tools:text="26/100~" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listView_air_pollution"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="20dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:listitem="@layout/item_air_pollution" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

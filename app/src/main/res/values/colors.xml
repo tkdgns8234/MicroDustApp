@@ -7,10 +7,30 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#999999</color>
 
-    <color name="material_right_blue">#63ccff</color>
-    <color name="material_right_green">#99d066</color>
-    <color name="material_yellow">#ffff6b</color>
-    <color name="material_red">#e53935</color>
+    <color name="background_light_gray">#8A212121</color>
+    <color name="background_gray">#D7212121</color>
+
+    <!--
+    최고, 좋음, 양호, 보통, 나쁨, 아주나쁨, 매우나쁨, 최악 순
+    material_blue_600
+    material_cyan_500
+    material_cyan_600
+    material_green_500
+    material_yellow_600
+    material_orange_600
+    material_deep_orange_700
+    material_red_a_700
+    -->
+
+    <color name="best">#1e88e5</color>
+    <color name="good">#00bcd4</color>
+    <color name="fine">#00acc1</color>
+    <color name="normal">#4caf50</color>
+    <color name="bad">#fdd835</color>
+    <color name="very_bad">#fb8c00</color>
+    <color name="very_very_bad">#e64a19</color>
+    <color name="worst">#d60000</color>
 
 </resources>

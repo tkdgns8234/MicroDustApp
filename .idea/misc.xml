@@ -4,6 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Administrator/Desktop/ct/Kotlin/App_intermediate/MicroDustApp/app/src/main/res/layout/activity_main.xml" value="0.15677083333333333" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/circular_progress_background.xml" value="0.234" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/circular_progressbar.xml" value="0.1955" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/layer_progressbar_background.xml" value="0.1955" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/shape_corner_radius.xml" value="0.1945" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/item_air_pollution.xml" value="0.24114583333333334" />
       </map>
     </option>
   </component>

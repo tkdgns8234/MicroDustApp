@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="my_textView_style_bold">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/suit_bold</item>
+    </style>
+
+    <style name="my_textView_style_medium">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/suit_medium</item>
+    </style>
+
+</resources>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_corner_radius"
+    android:backgroundTint="@color/background_gray"
+    android:layout_marginVertical="10dp"
+    android:layout_marginHorizontal="7dp"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="7dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/my_textView_style_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="미세먼지" />
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="50"
+        android:progressBackgroundTint="@color/gray"
+        android:progressDrawable="@drawable/circular_progressbar"
+        android:progressTint="@color/white"
+        app:layout_constraintEnd_toEndOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="@id/tv_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
+        app:layout_goneMarginTop="5dp" />
+
+    <TextView
+        android:id="@+id/tv_grade"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="@id/tv_title"
+        app:layout_constraintTop_toBottomOf="@id/progressbar"
+        tools:text="좋음" />
+
+    <TextView
+        style="@style/my_textView_style_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="@id/tv_grade"
+        app:layout_constraintStart_toStartOf="@id/tv_grade"
+        app:layout_constraintTop_toBottomOf="@id/tv_grade"
+        tools:text="24" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
