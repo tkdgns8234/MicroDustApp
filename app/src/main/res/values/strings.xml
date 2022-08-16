@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MicroDustApp</string>
+    <string name="desc_good">공기가 아주 맑아요 외출합시다 !__!</string>
+    <string name="desc_normal">일상생활하기 좋은 날이에요</string>
+    <string name="desc_bad">외출을 자제하고, 마스크를 꼭 착용해 주세요!</string>
+    <string name="desc_worst">매우 나빠요!! 외출 금지!!</string>
+    <string name="desc_unknown"> </string>
 </resources>

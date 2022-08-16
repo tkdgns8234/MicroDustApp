@@ -50,6 +50,7 @@
         tools:text="좋음" />
 
     <TextView
+        android:id="@+id/tv_value"
         style="@style/my_textView_style_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

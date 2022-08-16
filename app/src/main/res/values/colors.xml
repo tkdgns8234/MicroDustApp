@@ -11,6 +11,7 @@
 
     <color name="background_light_gray">#8A212121</color>
     <color name="background_gray">#D7212121</color>
+    <color name="background_white">#9CFFFFFF</color>
 
     <!--
     최고, 좋음, 양호, 보통, 나쁨, 아주나쁨, 매우나쁨, 최악 순
@@ -24,13 +25,13 @@
     material_red_a_700
     -->
 
-    <color name="best">#1e88e5</color>
-    <color name="good">#00bcd4</color>
-    <color name="fine">#00acc1</color>
+    <color name="good">#1e88e5</color>
+<!--    <color name="good">#00bcd4</color>-->
+<!--    <color name="fine">#00acc1</color>-->
     <color name="normal">#4caf50</color>
     <color name="bad">#fdd835</color>
-    <color name="very_bad">#fb8c00</color>
-    <color name="very_very_bad">#e64a19</color>
+<!--    <color name="very_bad">#fb8c00</color>-->
+<!--    <color name="very_very_bad">#e64a19</color>-->
     <color name="worst">#d60000</color>
 
 </resources>

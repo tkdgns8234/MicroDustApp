@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_700"
+    android:background="@color/good"
     tools:context=".MainActivity">
 
     <TextView
@@ -31,7 +32,7 @@
         tools:text="02:10 PM" />
 
     <ImageView
-        android:id="@+id/iv_emoticon"
+        android:id="@+id/iv_emoji"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="30dp"
@@ -50,7 +51,7 @@
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_emoticon"
+        app:layout_constraintTop_toBottomOf="@id/iv_emoji"
         tools:text="좋음" />
 
     <TextView
@@ -65,15 +66,28 @@
         app:layout_constraintTop_toBottomOf="@id/tv_grade"
         tools:text="공기가 아주 맑아요 외출합시다 !__!" />
 
+
+    <View
+        android:background="@color/background_white"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.28"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="15dp"
+        />
+
     <ProgressBar
         android:id="@+id/micro_dust_progressbar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
+        android:max="150"
         android:paddingHorizontal="10dp"
         android:progressDrawable="@drawable/item_progressbar_background"
-        app:layout_constraintBottom_toTopOf="@id/listView_air_pollution"
+        app:layout_constraintBottom_toTopOf="@id/rv_air_pollution"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:progress="30" />
@@ -88,10 +102,10 @@
         app:layout_constraintBottom_toBottomOf="@id/micro_dust_progressbar"
         app:layout_constraintEnd_toEndOf="@id/micro_dust_progressbar"
         app:layout_constraintTop_toTopOf="@id/micro_dust_progressbar"
-        tools:text="26/100~" />
+        tools:text="26/150~" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listView_air_pollution"
+        android:id="@+id/rv_air_pollution"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
