@@ -9,10 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#999999</color>
 
-    <color name="background_light_gray">#8A212121</color>
+    <color name="background_light_gray">#75212121</color>
     <color name="background_gray">#D7212121</color>
-    <color name="background_white">#9CFFFFFF</color>
-
+    <color name="background_white">#81FFFFFF</color>
     <!--
     최고, 좋음, 양호, 보통, 나쁨, 아주나쁨, 매우나쁨, 최악 순
     material_blue_600
