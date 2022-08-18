@@ -12,7 +12,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,16 +24,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideLine1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="500dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideLine2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="700dp" />
+
                 <TextView
                     android:id="@+id/tv_location"
                     style="@style/my_textView_style_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="100dp"
                     android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@id/tv_time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
                     tools:text="천안시 불당동" />
 
                 <TextView
@@ -41,7 +56,8 @@
                     style="@style/my_textView_style_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="7dp"
+                    app:layout_constraintBottom_toTopOf="@id/iv_emoji"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_location"
@@ -51,8 +67,9 @@
                     android:id="@+id/iv_emoji"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_marginTop="25dp"
                     android:src="@drawable/good"
+                    android:layout_marginTop="25dp"
+                    app:layout_constraintBottom_toTopOf="@id/tv_dust"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_time"
@@ -65,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:text="미세먼지"
+                    app:layout_constraintBottom_toTopOf="@id/tv_grade"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iv_emoji" />
@@ -76,6 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:textSize="40sp"
+                    app:layout_constraintBottom_toTopOf="@id/tv_description"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_dust"
@@ -88,6 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@id/guideLine1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_grade"
@@ -97,13 +117,13 @@
                     android:id="@+id/backgroundView_1"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="40dp"
                     android:layout_marginBottom="15dp"
                     android:background="@color/background_light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHeight_percent="0.3"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_description" />
+                    app:layout_constraintTop_toTopOf="@id/guideLine1"
+                    app:layout_constraintBottom_toBottomOf="@id/guideLine2"
+                    />
 
                 <ProgressBar
                     android:id="@+id/micro_dust_progressbar"
@@ -133,7 +153,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_air_pollution"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginTop="10dp"
@@ -241,6 +261,7 @@
                     tools:text="원활한 대기 확산으로 대기 상태가 대체로 청정할 것으로 예상됩니다." />
 
                 <TextView
+                    android:id="@+id/forecastTime"
                     style="@style/my_textView_style_medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -251,7 +272,7 @@
                     tools:text="2022-08-16 23시 발표" />
 
                 <View
-                    android:id="@+id/dustMapBackground"
+                    android:id="@+id/forecastVideoBackground"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_marginTop="25dp"
@@ -260,32 +281,34 @@
                     app:layout_constraintTop_toBottomOf="@id/backgroundView_2" />
 
                 <TextView
-                    android:id="@+id/tv_dustMapTitle"
+                    android:id="@+id/forecastVideoTitle"
                     style="@style/my_textView_style_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="예보 영상 (미세먼지)"
                     android:textSize="15sp"
-                    app:layout_constraintBottom_toBottomOf="@id/dustMapBackground"
+                    app:layout_constraintBottom_toBottomOf="@id/forecastVideoBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/dustMapBackground" />
+                    app:layout_constraintTop_toTopOf="@id/forecastVideoBackground" />
 
                 <View
-                    android:id="@+id/backgroundView_dustMap"
+                    android:id="@+id/backgroundView_forecastVideo"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:background="@color/background_light_gray"
                     app:layout_constraintHeight_percent="0.55"
-                    app:layout_constraintTop_toBottomOf="@id/dustMapBackground" />
+                    app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground" />
 
                 <androidx.viewpager2.widget.ViewPager2
-                    android:layout_marginTop="15dp"
-                    tools:background="@color/black"
+                    android:id="@+id/forecastVideoViewPager"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal"
                     app:layout_constraintHeight_percent="0.5"
-                    app:layout_constraintTop_toBottomOf="@id/dustMapBackground" />
+                    app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground"
+                    tools:background="@color/black" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

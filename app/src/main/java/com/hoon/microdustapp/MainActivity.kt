@@ -16,16 +16,18 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.material.snackbar.Snackbar
+import com.hoon.microdustapp.data.api.RetrofitInstance
 import com.hoon.microdustapp.data.api.RetrofitInstance.getMeasureInfo
 import com.hoon.microdustapp.data.api.RetrofitInstance.getNearbyMeasuringStation
 import com.hoon.microdustapp.data.model.AirPollutionModel
+import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.util.constants.AirPollution
 import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
+import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
 import kotlinx.coroutines.*
-import java.lang.Exception
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,6 +42,13 @@ https://origogi.github.io/coroutine/%EC%BD%94%EB%A3%A8%ED%8B%B4-%EC%8A%A4%EC%BD%
 progress
 // max값을 먼저 지정해야함 (sdk 코드 보면 progress 적용 시 값을 max 이상 min 이하로 지정할 수 없음)
 
+
+여러화면 대응하기
+guideline + constraintlayout + dimens
+-> dimens 만으로 세부하게 모두 커버하기 힘듦
+-> 실제 layout 사이즈 측정해서 guideline 위치 설정 (~dp)
+https://bonoogi.postype.com/post/1467632
+https://onedaycodeing.tistory.com/60
 
 측정소 지도 구현(simple 8도 지도)
 
@@ -68,6 +77,7 @@ refresh layout으로 변경
 공유기능 구현
 
 지역추가 기능 구현 dsts
+
  */
 
 class MainActivity : AppCompatActivity() {
@@ -81,24 +91,33 @@ class MainActivity : AppCompatActivity() {
     private val scope = MainScope()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 현재 위치를 가져옴
     private lateinit var cancellationTokenSource: CancellationTokenSource // 현재 위치 접근 동작을 취소할 수 있는 토큰
-    private lateinit var recyclerViewAdapter: AirPollutionListAdapter
+    private lateinit var airPollutionListAdapter: AirPollutionListAdapter
+    private lateinit var forecastVideoAdapter: ForecastVideoAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         initVariables()
-        initRecyclerView()
+        initPollutionListAdapter()
+        initForecastVideoAdapter()
         requestLocationPermission()
+        getForecastInfo()
     }
 
     private fun initVariables() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private fun initRecyclerView() = with(binding) {
-        recyclerViewAdapter = AirPollutionListAdapter { }
-        rvAirPollution.adapter = recyclerViewAdapter
+    private fun initForecastVideoAdapter() = with(binding) {
+        forecastVideoAdapter = ForecastVideoAdapter()
+        forecastVideoViewPager.adapter = forecastVideoAdapter
+    }
+
+    private fun initPollutionListAdapter() = with(binding) {
+        airPollutionListAdapter = AirPollutionListAdapter { }
+        rvAirPollution.adapter = airPollutionListAdapter
         rvAirPollution.layoutManager =
             LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
     }
@@ -148,10 +167,55 @@ class MainActivity : AppCompatActivity() {
                     val measureResult = getMeasureInfo(stationName!!)
 
                     withContext(Dispatchers.Main) {
-                        updateUI(location.latitude, location.longitude, measureResult!!)
+                        updateMainUI(location.latitude, location.longitude, measureResult!!)
                     }
                 }
             }
+        }
+    }
+
+    private fun getForecastInfo() = scope.launch(Dispatchers.IO) {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        if (hour < 5) {
+            // 새벽 5시 이전인경우 하루 이전 관측 정보를 보여준다.
+            calendar.add(Calendar.DATE, -1)
+        }
+        val searchDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
+
+        RetrofitInstance.getForecastInfo(searchDate)?.let { forecastItems ->
+            scope.launch(Dispatchers.Main) {
+                updateForecastUI(forecastItems)
+            }
+        }
+    }
+
+
+    private fun updateForecastUI(forecastItems: List<ForecastItem>) = with(binding) {
+
+        var imageUrlMicroDust: String? = null
+        var imageUrlUltraMicroDust: String? = null
+
+        forecastItems.forEach { item ->
+            if (item.imageUrl7.endsWith("fileName=").not()) { // url 쿼리 스트링이 잘 설정되어있는 경우
+                imageUrlMicroDust = item.imageUrl7
+            }
+            if (item.imageUrl8.endsWith("fileName=").not()) {
+                imageUrlUltraMicroDust = item.imageUrl8
+            }
+            item.informData
+        }
+        forecastVideoAdapter.submitList(listOf(imageUrlMicroDust, imageUrlUltraMicroDust))
+
+        forecastItems.get(0)?.let {
+            tvTodayDesc.text = it.informCause.split("[미세먼지] ")[1] // 예보 내용
+            forecastTime.text = it.dataTime // 예보 업데이트 시간
+        }
+
+        forecastItems.get(1)?.let {
+            tvTomorrowDesc.text = it.informCause.split("[미세먼지] ")[1] // 예보 내용
         }
     }
 
@@ -215,10 +279,10 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        recyclerViewAdapter.submitList(models)
+        airPollutionListAdapter.submitList(models)
     }
 
-    private fun updateUI(latitude: Double, longitude: Double, measureResult: MeasureResult) {
+    private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult) {
         updateAddressFromGps(latitude, longitude)
         updateTime()
         updateGradeInfo(measureResult)

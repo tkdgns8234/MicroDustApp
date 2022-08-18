@@ -1,6 +1,7 @@
 package com.hoon.microdustapp.data.api
 
 import com.hoon.microdustapp.BuildConfig
+import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.util.constants.Url.AIR_KOREA_API_BASE_URL
 import com.hoon.microdustapp.data.util.constants.Url.KAKAO_API_BASE_URL
@@ -36,6 +37,14 @@ object RetrofitInstance {
             ?.body
             ?.MeasureResults
             ?.firstOrNull()
+    }
+
+    suspend fun getForecastInfo(searchDate: String) : List<ForecastItem>? {
+        return airKoreaApiService.getForecastInfo(searchDate)
+            .body()
+            ?.response
+            ?.body
+            ?.forecastItems
     }
 
     val kakaoLocalApiService: KaKaoLocalApiService by lazy { getKakaoRetrofit().create(KaKaoLocalApiService::class.java) }
