@@ -16,6 +16,7 @@ class ForecastVideoAdapter : ListAdapter<String, ForecastVideoAdapter.ViewHolder
             Glide
                 .with(binding.root.context)
                 .load(url)
+                .fitCenter()
                 .into(binding.imageViewForecastVideo)
         }
     }

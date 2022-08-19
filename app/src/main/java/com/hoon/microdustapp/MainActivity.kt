@@ -1,14 +1,21 @@
 package com.hoon.microdustapp
 
 import android.Manifest
+import android.R
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Point
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +34,6 @@ import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
 import kotlinx.coroutines.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,18 +52,16 @@ progress
 여러화면 대응하기
 guideline + constraintlayout + dimens
 -> dimens 만으로 세부하게 모두 커버하기 힘듦
--> 실제 layout 사이즈 측정해서 guideline 위치 설정 (~dp)
+-> 실제 layout 사이즈 측정해서 guideline 위치 설정 (~dp) -> https://ryan94.tistory.com/32 참조
 https://bonoogi.postype.com/post/1467632
 https://onedaycodeing.tistory.com/60
 
-측정소 지도 구현(simple 8도 지도)
 
-예보, 예보시간, 미세먼지 gif 이미지
-http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMinuDustFrcstDspth?serviceKey=cgQ0LFIb5z3rpBZC9JvmId2VpJGKSAY3OSgLG%2B6ueLWpYiJZbpYBQ%2FqWPCUbjgegEqaSU1yCO5JseVLBu21LnQ%3D%3D&returnType=json&numOfRows=700&searchDate=2022-08-16&ver=1.1
-
-뷰페이저 + 인디케이터 만들기
-
-8도 미세먼지 지도 만들기 -> ui 어떻게 위치시킬지 생각해보기
+측정소 지도 구현 -> 4번
+지역 추가 기능 구현 -> 3번
+측정 정보(자료 출처 추가) -> 2번
+viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처, 측정시간 추가
+0번 title text 미국주소로 나오네;
 
 행동요령 -> 거의 null만 들어옴
 
@@ -69,8 +73,6 @@ http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMinuDustFrcstDspth?servic
 로딩 구현
 
 refresh layout으로 변경
-
-하단 rv progress 수치 변경
 
 애니메이션 구현
 
@@ -103,7 +105,28 @@ class MainActivity : AppCompatActivity() {
         initPollutionListAdapter()
         initForecastVideoAdapter()
         requestLocationPermission()
-        getForecastInfo()
+        updateForecastInfo()
+        initGuideLinePosition()
+    }
+
+    private fun initGuideLinePosition() {
+        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val height = if (Build.VERSION.SDK_INT >= 30) {
+            windowManager.currentWindowMetrics.bounds.height()
+        } else {
+            val display = windowManager.defaultDisplay
+            val size = Point()
+            display.getSize(size)
+            size.y
+        }
+
+        with(binding) {
+            Log.e(TAG, "height= " + height)
+
+            guideLine1.setGuidelineBegin((height * 0.63).toInt())
+            guideLine2.setGuidelineBegin((height * 0.93).toInt())
+        }
     }
 
     private fun initVariables() {
@@ -149,12 +172,14 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     private fun getAirCondition() {
+        // 위치정보를 가져옴
         cancellationTokenSource = CancellationTokenSource()
         fusedLocationClient.getCurrentLocation(
             LocationRequest.PRIORITY_HIGH_ACCURACY, // 한번만 요청할것이기에 priority high 로 요청
             cancellationTokenSource.token
         ).addOnSuccessListener { location ->
 
+            //scope 별 catch 구문 2개 사용하는것보다 scope에 exception handler 설정
             val handler = CoroutineExceptionHandler { _, exception ->
                 Toast.makeText(this, "미세먼지 측정 정보를 불러오는데 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "${exception.printStackTrace()}")
@@ -162,8 +187,7 @@ class MainActivity : AppCompatActivity() {
 
             scope.launch(handler) {
                 withContext(Dispatchers.IO) {
-                    val stationName =
-                        getNearbyMeasuringStation(location.latitude, location.longitude)
+                    val stationName = getNearbyMeasuringStation(location.latitude, location.longitude)
                     val measureResult = getMeasureInfo(stationName!!)
 
                     withContext(Dispatchers.Main) {
@@ -174,13 +198,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getForecastInfo() = scope.launch(Dispatchers.IO) {
+    private fun updateForecastInfo() = scope.launch(Dispatchers.IO) {
         val calendar = Calendar.getInstance()
         calendar.time = Date()
 
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         if (hour < 5) {
-            // 새벽 5시 이전인경우 하루 이전 관측 정보를 보여준다.
+            // 새벽 5시 이전인경우 하루 이전 관측 정보를 보여준다. (서버 관측 정보가 업데이트 되지 않았기 때문)
             calendar.add(Calendar.DATE, -1)
         }
         val searchDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
@@ -205,21 +229,22 @@ class MainActivity : AppCompatActivity() {
             if (item.imageUrl8.endsWith("fileName=").not()) {
                 imageUrlUltraMicroDust = item.imageUrl8
             }
-            item.informData
         }
         forecastVideoAdapter.submitList(listOf(imageUrlMicroDust, imageUrlUltraMicroDust))
 
+        // 오늘 예보
         forecastItems.get(0)?.let {
             tvTodayDesc.text = it.informCause.split("[미세먼지] ")[1] // 예보 내용
             forecastTime.text = it.dataTime // 예보 업데이트 시간
         }
 
+        // 내일 예보
         forecastItems.get(1)?.let {
             tvTomorrowDesc.text = it.informCause.split("[미세먼지] ")[1] // 예보 내용
         }
     }
 
-    private fun updateRecyclerView(measureResult: MeasureResult) {
+    private fun updateAirPollutionList(measureResult: MeasureResult) {
         val models = mutableListOf<AirPollutionModel>()
 
         models.add(
@@ -284,9 +309,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult) {
         updateAddressFromGps(latitude, longitude)
-        updateTime()
+        updateTimeText()
         updateGradeInfo(measureResult)
-        updateRecyclerView(measureResult!!)
+        updateAirPollutionList(measureResult!!)
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(binding) {
@@ -305,6 +330,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateAddressFromGps(latitude: Double, longitude: Double) {
+        Log.e(TAG, "latitude: ${latitude}, longitude: ${longitude}")
         val geocoder = Geocoder(this, Locale.KOREAN)
         val address = geocoder.getFromLocation(latitude, longitude, 1).firstOrNull()
 
@@ -317,7 +343,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTime() {
+    private fun updateTimeText() {
         val now = System.currentTimeMillis()
         binding.tvTime.text = SimpleDateFormat("HH:mma").format(Date(now))
     }

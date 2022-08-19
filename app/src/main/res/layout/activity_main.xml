@@ -20,7 +20,7 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/test"
+                android:id="@+id/mainConstraint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -29,14 +29,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_begin="500dp" />
+                    tools:layout_constraintGuide_begin="@dimen/guideline1_top" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideLine2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_begin="700dp" />
+                    tools:layout_constraintGuide_begin="@dimen/guideline2_top" />
 
                 <TextView
                     android:id="@+id/tv_location"
@@ -44,6 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
+                    app:layout_constraintVertical_bias="0.7"
                     app:layout_constraintBottom_toTopOf="@id/tv_time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -117,7 +118,6 @@
                     android:id="@+id/backgroundView_1"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginBottom="15dp"
                     android:background="@color/background_light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -172,10 +172,10 @@
                 android:layout_height="750dp">
 
                 <View
+                    android:layout_marginTop="25dp"
                     android:id="@+id/forecastBackground"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginTop="25dp"
                     android:background="@drawable/shape_top_radius"
                     android:backgroundTint="@color/background_gray"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -297,7 +297,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:background="@color/background_light_gray"
-                    app:layout_constraintHeight_percent="0.55"
+                    app:layout_constraintHeight_percent="0.58"
                     app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground" />
 
                 <androidx.viewpager2.widget.ViewPager2
@@ -306,7 +306,8 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="15dp"
                     android:orientation="horizontal"
-                    app:layout_constraintHeight_percent="0.5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHeight_percent="0.47"
                     app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground"
                     tools:background="@color/black" />
 
