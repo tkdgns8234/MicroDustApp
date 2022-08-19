@@ -7,11 +7,9 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Point
 import android.location.Geocoder
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -60,8 +58,9 @@ https://onedaycodeing.tistory.com/60
 
 페이지 로딩 구현하기, 각 layout alpha 0 에서 1로 변경하기 -> 5번
 측정소 지도 구현 -> 4번
-지역 추가 기능 구현 -> 3번
-측정 정보(자료 출처 추가) -> 2번
+지역 추가 기능 구현 -> 3번 -> 진행중, 카카오 map api 써야될듯, bottom sheet dialog + drawable layout 사용하기 !! viewBinding 에러부터 해결하고 가자
+
+측정 정보(자료 출처 추가) -> 2번 -> 완료
 viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처 -> 완료
 
 행동요령 -> 거의 null만 들어옴
@@ -334,7 +333,7 @@ class MainActivity : AppCompatActivity() {
         updateTimeText()
         updateGradeInfo(measureResult)
         updateAirPollutionList(measureResult)
-        binding.tvMeasureStationDesc.text = "${stationInfo.stationName} ${stationInfo.addr}"
+        binding.tvMeasureStationDesc.text = "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(binding) {

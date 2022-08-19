@@ -3,29 +3,30 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../layout/custom_preview.xml" value="0.21979166666666666" />
         <entry key="..\:/Users/Administrator/Desktop/ct/Kotlin/App_intermediate/MicroDustApp/app/src/main/res/layout/activity_main.xml" value="0.15677083333333333" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/circular_progress_background.xml" value="0.234" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/circular_progressbar.xml" value="0.1955" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/ic_baseline_error_outline_24.xml" value="0.2" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/ic_search_24.xml" value="0.2315" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/item_progressbar_background.xml" value="0.24" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/layer_progressbar_background.xml" value="0.1955" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/shape_circle.xml" value="0.2485" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/shape_corner_radius.xml" value="0.1945" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/drawable/shape_top_radius.xml" value="0.2485" />
-        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/activity_main.xml" value="0.249743062692703" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/activity_main.xml" value="0.17" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/dialog_bottom_sheet.xml" value="0.30833333333333335" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/item_air_pollution.xml" value="0.24114583333333334" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/item_forecast_video_viewpager.xml" value="0.25" />
-        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/test.xml" value="0.2" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/item_region.xml" value="0.30833333333333335" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/layout_forecast_view.xml" value="0.3074561403508772" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/layout_main_view.xml" value="0.3074561403508772" />
+        <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/layout/test.xml" value="0.33" />
         <entry key="..\:/Users/Administrator/Desktop/ct/MicroDustApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2045" />
-        <entry key="app/src/main/res/drawable/shape_oval_black.xml" value="0.145" />
-        <entry key="app/src/main/res/drawable/shape_oval_gray.xml" value="0.145" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.19375" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

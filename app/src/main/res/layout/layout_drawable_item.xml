@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!-- drawerLayout의 swipe 영역 -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_drawableItem"
+    android:layout_width="250dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:layout_margin="5dp"
+    android:background="@drawable/shape_corner_radius"
+    android:backgroundTint="@color/background_gray">
+
+    <EditText
+        android:id="@+id/editTextSearchRegion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_corner_radius"
+        android:backgroundTint="@color/background_gray"
+        android:drawableStart="@drawable/ic_search_24"
+        android:drawablePadding="5dp"
+        android:drawableTint="@color/gray"
+        android:hint="지역 추가하기"
+        android:padding="10dp"
+        android:textColorHint="@color/gray"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextSearchRegion"
+        tools:listitem="@layout/item_region" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

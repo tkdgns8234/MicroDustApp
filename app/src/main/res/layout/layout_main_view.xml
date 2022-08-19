@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutMainView"
+    tools:background="@color/good"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideLine1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_constraintGuide_begin="@dimen/guideline1_top" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideLine2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_constraintGuide_begin="@dimen/guideline2_top" />
+
+    <TextView
+        android:id="@+id/tv_location"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/tv_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="천안시 불당동" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        app:layout_constraintBottom_toTopOf="@id/iv_emoji"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_location"
+        tools:text="02:10 PM" />
+
+    <ImageView
+        android:id="@+id/iv_emoji"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/good"
+        app:layout_constraintBottom_toTopOf="@id/tv_dust"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_time"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_dust"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="미세먼지"
+        app:layout_constraintBottom_toTopOf="@id/tv_grade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_emoji" />
+
+    <TextView
+        android:id="@+id/tv_grade"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toTopOf="@id/tv_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_dust"
+        tools:text="좋음" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        style="@style/my_textView_style_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/guideLine1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_grade"
+        tools:text="공기가 아주 맑아요 외출합시다 !__!" />
+
+    <View
+        android:id="@+id/backgroundView_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/background_light_gray"
+        app:layout_constraintBottom_toBottomOf="@id/guideLine2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideLine1" />
+
+    <ProgressBar
+        android:id="@+id/micro_dust_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="150"
+        android:paddingHorizontal="10dp"
+        android:progressDrawable="@drawable/item_progressbar_background"
+        app:layout_constraintBottom_toTopOf="@id/rv_air_pollution"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/backgroundView_1"
+        tools:progress="30" />
+
+    <TextView
+        android:id="@+id/micro_dust_progressbar_text"
+        style="@style/my_textView_style_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/micro_dust_progressbar"
+        app:layout_constraintEnd_toEndOf="@id/micro_dust_progressbar"
+        app:layout_constraintTop_toTopOf="@id/micro_dust_progressbar"
+        tools:text="26/150~" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_air_pollution"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="@id/backgroundView_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/micro_dust_progressbar"
+        tools:listitem="@layout/item_air_pollution" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
