@@ -20,7 +20,7 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mainConstraint"
+                android:id="@+id/mainConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -44,11 +44,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
-                    app:layout_constraintVertical_bias="0.7"
                     app:layout_constraintBottom_toTopOf="@id/tv_time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.7"
                     app:layout_constraintVertical_chainStyle="packed"
                     tools:text="천안시 불당동" />
 
@@ -68,8 +68,8 @@
                     android:id="@+id/iv_emoji"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:src="@drawable/good"
                     android:layout_marginTop="25dp"
+                    android:src="@drawable/good"
                     app:layout_constraintBottom_toTopOf="@id/tv_dust"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -119,11 +119,10 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@color/background_light_gray"
+                    app:layout_constraintBottom_toBottomOf="@id/guideLine2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/guideLine1"
-                    app:layout_constraintBottom_toBottomOf="@id/guideLine2"
-                    />
+                    app:layout_constraintTop_toTopOf="@id/guideLine1" />
 
                 <ProgressBar
                     android:id="@+id/micro_dust_progressbar"
@@ -168,14 +167,15 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/subConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="750dp">
 
                 <View
-                    android:layout_marginTop="25dp"
                     android:id="@+id/forecastBackground"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
+                    android:layout_marginTop="25dp"
                     android:background="@drawable/shape_top_radius"
                     android:backgroundTint="@color/background_gray"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -285,7 +285,7 @@
                     style="@style/my_textView_style_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="예보 영상 (미세먼지)"
+                    android:text="예보 영상"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="@id/forecastVideoBackground"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -300,16 +300,116 @@
                     app:layout_constraintHeight_percent="0.58"
                     app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground" />
 
+                <TextView
+                    android:id="@+id/forecastVideoSubTitle"
+                    style="@style/my_textView_style_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintBottom_toTopOf="@id/forecastVideoViewPager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/backgroundView_forecastVideo"
+                    tools:text="미세먼지 (출처: 한국환경공단)" />
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/forecastVideoViewPager"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="15dp"
+                    android:layout_marginBottom="50dp"
                     android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHeight_percent="0.47"
-                    app:layout_constraintTop_toBottomOf="@id/forecastVideoBackground"
+                    app:layout_constraintBottom_toBottomOf="@id/backgroundView_forecastVideo"
+                    app:layout_constraintTop_toBottomOf="@id/forecastVideoSubTitle"
                     tools:background="@color/black" />
+
+                <ImageView
+                    android:id="@+id/iv_indicator1"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/shape_oval_white"
+                    app:layout_constraintEnd_toStartOf="@id/iv_indicator2"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/forecastVideoViewPager" />
+
+                <ImageView
+                    android:id="@+id/iv_indicator2"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/shape_oval_white"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_indicator1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_indicator1"
+                    app:layout_constraintTop_toTopOf="@id/iv_indicator1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_gray"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tv_measure_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/my_textView_style_medium"
+                    android:text="기준 측정소"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    style="@style/my_textView_style_medium"
+                    android:id="@+id/tv_measure_station_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_measure_station"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="불당동" />
+
+                <TextView
+                    style="@style/my_textView_style_medium"
+                    android:id="@+id/tv_data_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="자료 출처"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_measure_station_desc" />
+
+                <TextView
+                    style="@style/my_textView_style_medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="한국환경공단(에어코리아)"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
+                    app:layout_constraintTop_toTopOf="@id/tv_data_source" />
+
+                <TextView
+                    style="@style/my_textView_style_medium"
+                    android:id="@+id/tv_caution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="주의"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_data_source" />
+
+                <TextView
+                    style="@style/my_textView_style_medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="측정소 현지 사정이나 데이터의 수신 상태에 따라 실제 날씨 및 농도 수치와 다를 수 있습니다."
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
+                    app:layout_constraintTop_toTopOf="@id/tv_caution" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

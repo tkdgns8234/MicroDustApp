@@ -1,8 +1,11 @@
 package com.hoon.microdustapp.data.api
 
+import android.util.Log
 import com.hoon.microdustapp.BuildConfig
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
+import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
+import com.hoon.microdustapp.data.model.measuringstation.StationInfo
 import com.hoon.microdustapp.data.util.constants.Url.AIR_KOREA_API_BASE_URL
 import com.hoon.microdustapp.data.util.constants.Url.KAKAO_API_BASE_URL
 import okhttp3.OkHttpClient
@@ -14,7 +17,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitInstance {
 
     // 위 경도값을 기반으로 TM 좌표를 가져옴
-    suspend fun getNearbyMeasuringStation(latitude: Double, longitude: Double): String? {
+    suspend fun getNearbyMeasuringStation(latitude: Double, longitude: Double): StationInfo? {
         val response = kakaoLocalApiService.getTmCoordinate(latitude, longitude)
         if (response.isSuccessful.not()) return null
 
@@ -27,16 +30,25 @@ object RetrofitInstance {
             ?.body
             ?.stationInfos
             ?.firstOrNull()
-            ?.stationName
     }
 
     suspend fun getMeasureInfo(stationName: String): MeasureResult? {
-        return airKoreaApiService.getMeasureInfo(stationName)
+        val results = airKoreaApiService.getMeasureInfo(stationName)
             .body()
             ?.response
             ?.body
             ?.MeasureResults
-            ?.firstOrNull()
+
+        results?.forEach {
+            // 필수 정보인 미세먼지, 초미세먼지 정보가 정상적으로 존재하는 경우 해당 데이터 return
+            if (it.pm10Grade != null &&
+                it.pm25Grade != null &&
+                it.pm10Grade != Grade.UNKNOWN &&
+                it.pm25Grade != Grade.UNKNOWN) {
+                return it
+            }
+        }
+        return null
     }
 
     suspend fun getForecastInfo(searchDate: String) : List<ForecastItem>? {

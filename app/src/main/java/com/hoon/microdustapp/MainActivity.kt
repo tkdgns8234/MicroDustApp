@@ -1,24 +1,24 @@
 package com.hoon.microdustapp
 
 import android.Manifest
-import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Point
 import android.location.Geocoder
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -29,6 +29,7 @@ import com.hoon.microdustapp.data.api.RetrofitInstance.getNearbyMeasuringStation
 import com.hoon.microdustapp.data.model.AirPollutionModel
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.MeasureResult
+import com.hoon.microdustapp.data.model.measuringstation.StationInfo
 import com.hoon.microdustapp.data.util.constants.AirPollution
 import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
@@ -57,11 +58,11 @@ https://bonoogi.postype.com/post/1467632
 https://onedaycodeing.tistory.com/60
 
 
+페이지 로딩 구현하기, 각 layout alpha 0 에서 1로 변경하기 -> 5번
 측정소 지도 구현 -> 4번
 지역 추가 기능 구현 -> 3번
 측정 정보(자료 출처 추가) -> 2번
-viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처, 측정시간 추가
-0번 title text 미국주소로 나오네;
+viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처 -> 완료
 
 행동요령 -> 거의 null만 들어옴
 
@@ -95,7 +96,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cancellationTokenSource: CancellationTokenSource // 현재 위치 접근 동작을 취소할 수 있는 토큰
     private lateinit var airPollutionListAdapter: AirPollutionListAdapter
     private lateinit var forecastVideoAdapter: ForecastVideoAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,6 +136,28 @@ class MainActivity : AppCompatActivity() {
     private fun initForecastVideoAdapter() = with(binding) {
         forecastVideoAdapter = ForecastVideoAdapter()
         forecastVideoViewPager.adapter = forecastVideoAdapter
+        forecastVideoViewPager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+                ivIndicator1.setImageDrawable(getDrawable(R.drawable.shape_oval_gray))
+                ivIndicator2.setImageDrawable(getDrawable(R.drawable.shape_oval_gray))
+
+                when(position) {
+                    0 -> {
+                        ivIndicator1.setImageDrawable(getDrawable(R.drawable.shape_oval_white))
+                        forecastVideoSubTitle.text = "미세먼지"
+                        forecastVideoSubTitle.text = "미세먼지 (출처: 한국환경공단)"
+                    }
+                    1 -> {
+                        ivIndicator2.setImageDrawable(getDrawable(R.drawable.shape_oval_white))
+                        forecastVideoSubTitle.text = "초미세먼지"
+                        forecastVideoSubTitle.text = "초미세먼지 (출처: 한국환경공단)"
+                    }
+                }
+            }
+        })
     }
 
     private fun initPollutionListAdapter() = with(binding) {
@@ -180,18 +202,18 @@ class MainActivity : AppCompatActivity() {
         ).addOnSuccessListener { location ->
 
             //scope 별 catch 구문 2개 사용하는것보다 scope에 exception handler 설정
-            val handler = CoroutineExceptionHandler { _, exception ->
+            val errorHandler = CoroutineExceptionHandler { _, exception ->
                 Toast.makeText(this, "미세먼지 측정 정보를 불러오는데 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "${exception.printStackTrace()}")
             }
 
-            scope.launch(handler) {
+            scope.launch(errorHandler) {
                 withContext(Dispatchers.IO) {
-                    val stationName = getNearbyMeasuringStation(location.latitude, location.longitude)
-                    val measureResult = getMeasureInfo(stationName!!)
+                    val stationInfo = getNearbyMeasuringStation(location.latitude, location.longitude)
+                    val measureResult = getMeasureInfo(stationInfo?.stationName!!)
 
                     withContext(Dispatchers.Main) {
-                        updateMainUI(location.latitude, location.longitude, measureResult!!)
+                        updateMainUI(location.latitude, location.longitude, measureResult!!, stationInfo)
                     }
                 }
             }
@@ -307,17 +329,19 @@ class MainActivity : AppCompatActivity() {
         airPollutionListAdapter.submitList(models)
     }
 
-    private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult) {
+    private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult, stationInfo: StationInfo) {
         updateAddressFromGps(latitude, longitude)
         updateTimeText()
         updateGradeInfo(measureResult)
-        updateAirPollutionList(measureResult!!)
+        updateAirPollutionList(measureResult)
+        binding.tvMeasureStationDesc.text = "${stationInfo.stationName} ${stationInfo.addr}"
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(binding) {
         val currentGrade = measureResult.pm10Grade
         val currentVal = measureResult.pm10Value
 
+        Log.e(TAG, "currentGrade=" + currentGrade.toString())
         ivEmoji.setImageResource(currentGrade.emojiDrawableID)
         tvGrade.text = currentGrade.gradeText
         tvDescription.text = resources.getString(currentGrade.descStringID)

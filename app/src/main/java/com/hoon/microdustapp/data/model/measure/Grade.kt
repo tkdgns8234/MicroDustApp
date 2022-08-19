@@ -21,5 +21,9 @@ enum class Grade(
     @SerializedName("4")
     VERYBAD("매우 나쁨", R.color.worst, R.drawable.worst, R.string.desc_worst),
 
-    UNKNOWN("알 수 없음", R.color.gray, R.drawable.ic_unknown_24, R.string.desc_unknown)
+    UNKNOWN("알 수 없음", R.color.gray, R.drawable.ic_unknown_24, R.string.desc_unknown);
+
+    override fun toString(): String {
+        return "${gradeText}, ${colorID}, ${emojiDrawableID}, ${descStringID}"
+    }
 }
