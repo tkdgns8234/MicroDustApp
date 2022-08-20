@@ -68,6 +68,7 @@ object RetrofitInstance {
             ?.searchRegionsInfo
     }
 
+
     val kakaoLocalApiService: KaKaoLocalApiService by lazy { getKakaoRetrofit().create(KaKaoLocalApiService::class.java) }
 
     private fun getKakaoRetrofit(): Retrofit {

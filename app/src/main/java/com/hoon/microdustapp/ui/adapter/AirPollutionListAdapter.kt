@@ -1,7 +1,6 @@
 package com.hoon.microdustapp.ui.adapter
 
 import android.content.res.ColorStateList
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hoon.microdustapp.data.model.AirPollutionModel
-import com.hoon.microdustapp.data.util.constants.AirPollution
 import com.hoon.microdustapp.databinding.ItemAirPollutionBinding
 
 class AirPollutionListAdapter(val onClick: (index: Int) -> Any) :

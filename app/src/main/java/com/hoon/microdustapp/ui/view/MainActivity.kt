@@ -1,8 +1,9 @@
-package com.hoon.microdustapp
+package com.hoon.microdustapp.ui.view
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Point
@@ -12,7 +13,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +21,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.hoon.microdustapp.R
 import com.hoon.microdustapp.data.api.RetrofitInstance
 import com.hoon.microdustapp.data.api.RetrofitInstance.getMeasureInfo
 import com.hoon.microdustapp.data.api.RetrofitInstance.getNearbyMeasuringStation
@@ -28,11 +29,12 @@ import com.hoon.microdustapp.data.model.AirPollutionModel
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
-import com.hoon.microdustapp.data.util.constants.AirPollution
+import com.hoon.microdustapp.data.util.AirPollution
 import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.databinding.LayoutDrawableViewBinding
 import com.hoon.microdustapp.databinding.LayoutForecastViewBinding
 import com.hoon.microdustapp.databinding.LayoutMainViewBinding
+import com.hoon.microdustapp.ui.BaseActivity
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
 import kotlinx.coroutines.*
@@ -61,7 +63,7 @@ https://onedaycodeing.tistory.com/60
 
 페이지 로딩 구현하기, 각 layout alpha 0 에서 1로 변경하기 -> 5번
 측정소 지도 구현 -> 4번
-지역 추가 기능 구현 -> 3번 -> 진행중, 카카오 map api 써야될듯, drawable layout + activity 화면전환 사용하기 !!
+지역 추가 기능 구현 -> 3번 -> 진행중, Tmap api, drawable layout + activity 화면전환 사용하기 !!
 
 https://greedy0110.tistory.com/52 화면전환 애니메이션 참고 글
 
@@ -88,7 +90,7 @@ refresh layout으로 변경
 
  */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     companion object {
         const val TAG = "MainActivity"
@@ -121,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDrawbleView() {
         drawableViewBinding.editTextSearchRegion.setOnClickListener {
-            
+            startActivity(Intent(this, SearchRegionActivity::class.java))
         }
     }
 

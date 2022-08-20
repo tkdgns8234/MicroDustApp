@@ -1,4 +1,4 @@
-package com.hoon.microdustapp.data.util.constants
+package com.hoon.microdustapp.data.util
 
 enum class AirPollution(val pollutionName: String, val maximumValue: Double) {
     PM_10("미세먼지", 76.0),
