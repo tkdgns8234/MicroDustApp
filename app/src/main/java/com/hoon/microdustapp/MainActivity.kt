@@ -30,6 +30,9 @@ import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
 import com.hoon.microdustapp.data.util.constants.AirPollution
 import com.hoon.microdustapp.databinding.ActivityMainBinding
+import com.hoon.microdustapp.databinding.LayoutDrawableViewBinding
+import com.hoon.microdustapp.databinding.LayoutForecastViewBinding
+import com.hoon.microdustapp.databinding.LayoutMainViewBinding
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
 import kotlinx.coroutines.*
@@ -58,7 +61,10 @@ https://onedaycodeing.tistory.com/60
 
 페이지 로딩 구현하기, 각 layout alpha 0 에서 1로 변경하기 -> 5번
 측정소 지도 구현 -> 4번
-지역 추가 기능 구현 -> 3번 -> 진행중, 카카오 map api 써야될듯, bottom sheet dialog + drawable layout 사용하기 !! viewBinding 에러부터 해결하고 가자
+지역 추가 기능 구현 -> 3번 -> 진행중, 카카오 map api 써야될듯, drawable layout + activity 화면전환 사용하기 !!
+
+https://greedy0110.tistory.com/52 화면전환 애니메이션 참고 글
+
 
 측정 정보(자료 출처 추가) -> 2번 -> 완료
 viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처 -> 완료
@@ -89,7 +95,11 @@ class MainActivity : AppCompatActivity() {
         const val PERMISSION_LOCATION_REQUEST_CODE = 101
     }
 
-    private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val mainBinding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val mainViewBinding: LayoutMainViewBinding by lazy { mainBinding.layoutMainView }
+    private val forecastViewBinding: LayoutForecastViewBinding by lazy { mainBinding.layoutForecastView }
+    private val drawableViewBinding: LayoutDrawableViewBinding by lazy { mainBinding.layoutDrawableView }
+
     private val scope = MainScope()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 현재 위치를 가져옴
     private lateinit var cancellationTokenSource: CancellationTokenSource // 현재 위치 접근 동작을 취소할 수 있는 토큰
@@ -98,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+        setContentView(mainBinding.root)
 
         initVariables()
         initPollutionListAdapter()
@@ -106,6 +116,13 @@ class MainActivity : AppCompatActivity() {
         requestLocationPermission()
         updateForecastInfo()
         initGuideLinePosition()
+        initDrawbleView()
+    }
+
+    private fun initDrawbleView() {
+        drawableViewBinding.editTextSearchRegion.setOnClickListener {
+            
+        }
     }
 
     private fun initGuideLinePosition() {
@@ -120,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             size.y
         }
 
-        with(binding) {
+        with(mainViewBinding) {
             Log.e(TAG, "height= " + height)
 
             guideLine1.setGuidelineBegin((height * 0.63).toInt())
@@ -132,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private fun initForecastVideoAdapter() = with(binding) {
+    private fun initForecastVideoAdapter() = with(forecastViewBinding) {
         forecastVideoAdapter = ForecastVideoAdapter()
         forecastVideoViewPager.adapter = forecastVideoAdapter
         forecastVideoViewPager.registerOnPageChangeCallback(object :
@@ -159,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun initPollutionListAdapter() = with(binding) {
+    private fun initPollutionListAdapter() = with(mainViewBinding) {
         airPollutionListAdapter = AirPollutionListAdapter { }
         rvAirPollution.adapter = airPollutionListAdapter
         rvAirPollution.layoutManager =
@@ -167,9 +184,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        cancellationTokenSource.cancel()
         scope.cancel()
+        cancellationTokenSource.cancel()
+
+        super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(
@@ -238,7 +256,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun updateForecastUI(forecastItems: List<ForecastItem>) = with(binding) {
+    private fun updateForecastUI(forecastItems: List<ForecastItem>) = with(forecastViewBinding) {
 
         var imageUrlMicroDust: String? = null
         var imageUrlUltraMicroDust: String? = null
@@ -333,10 +351,10 @@ class MainActivity : AppCompatActivity() {
         updateTimeText()
         updateGradeInfo(measureResult)
         updateAirPollutionList(measureResult)
-        binding.tvMeasureStationDesc.text = "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
+        mainBinding.tvMeasureStationDesc.text = "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
     }
 
-    private fun updateGradeInfo(measureResult: MeasureResult) = with(binding) {
+    private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
         val currentGrade = measureResult.pm10Grade
         val currentVal = measureResult.pm10Value
 
@@ -344,7 +362,7 @@ class MainActivity : AppCompatActivity() {
         ivEmoji.setImageResource(currentGrade.emojiDrawableID)
         tvGrade.text = currentGrade.gradeText
         tvDescription.text = resources.getString(currentGrade.descStringID)
-        layoutMainBackground.setBackgroundResource(currentGrade.colorID)
+        mainBinding.activityMain.setBackgroundResource(currentGrade.colorID)
 
         microDustProgressbarText.text = "${currentVal}/150~"
         microDustProgressbar.progress = currentVal.toIntOrNull() ?: 0
@@ -358,7 +376,7 @@ class MainActivity : AppCompatActivity() {
         val address = geocoder.getFromLocation(latitude, longitude, 1).firstOrNull()
 
         if (address != null) {
-            binding.tvLocation.text = "${address.locality ?: ""} " +
+            mainViewBinding.tvLocation.text = "${address.locality ?: ""} " +
                     "${address.subLocality ?: ""} " +
                     "${address.thoroughfare ?: ""}"
         } else {
@@ -368,7 +386,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateTimeText() {
         val now = System.currentTimeMillis()
-        binding.tvTime.text = SimpleDateFormat("HH:mma").format(Date(now))
+        mainViewBinding.tvTime.text = SimpleDateFormat("HH:mma").format(Date(now))
     }
 
     private fun requestLocationPermission() {

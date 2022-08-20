@@ -3,13 +3,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_drawableItem"
     android:layout_width="250dp"
     android:layout_height="match_parent"
     android:layout_gravity="start"
     android:layout_margin="5dp"
     android:background="@drawable/shape_corner_radius"
-    android:backgroundTint="@color/background_gray">
+    android:backgroundTint="@color/background_gray"
+    android:fitsSystemWindows="true"
+    >
 
     <EditText
         android:id="@+id/editTextSearchRegion"
@@ -26,6 +27,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"

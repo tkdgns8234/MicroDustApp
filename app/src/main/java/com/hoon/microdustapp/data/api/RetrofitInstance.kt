@@ -6,8 +6,11 @@ import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
+import com.hoon.microdustapp.data.model.region.RegionInfo
+import com.hoon.microdustapp.data.model.region.SearchRegionsInfo
 import com.hoon.microdustapp.data.util.constants.Url.AIR_KOREA_API_BASE_URL
 import com.hoon.microdustapp.data.util.constants.Url.KAKAO_API_BASE_URL
+import com.hoon.microdustapp.data.util.constants.Url.TMAP_API_BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -59,6 +62,12 @@ object RetrofitInstance {
             ?.forecastItems
     }
 
+    suspend fun searchRegion(region: String): List<SearchRegionsInfo>? {
+        return tMapApiService.searchRegion(TMapApiService.CATEGORIES.GU_GUN, region)
+            .body()
+            ?.searchRegionsInfo
+    }
+
     val kakaoLocalApiService: KaKaoLocalApiService by lazy { getKakaoRetrofit().create(KaKaoLocalApiService::class.java) }
 
     private fun getKakaoRetrofit(): Retrofit {
@@ -69,11 +78,23 @@ object RetrofitInstance {
             .build()
     }
 
+
     val airKoreaApiService: AirKoreaApiService by lazy { getAirKoreaRetrofit().create(AirKoreaApiService::class.java) }
 
     private fun getAirKoreaRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(AIR_KOREA_API_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(buildHttpClient())
+            .build()
+    }
+
+
+    val tMapApiService: TMapApiService by lazy { getTMapRetrofit().create(TMapApiService::class.java) }
+
+    private fun getTMapRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(TMAP_API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(buildHttpClient())
             .build()

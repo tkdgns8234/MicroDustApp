@@ -19,6 +19,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_API_KEY", properties['KAKAO_API_KEY']
         buildConfigField "String", "AIR_KOREA_API_KEY", properties['AIR_KOREA_API_KEY']
+        buildConfigField "String", "TMAP_API_KEY", properties['TMAP_API_KEY']
     }
 
     buildTypes {
