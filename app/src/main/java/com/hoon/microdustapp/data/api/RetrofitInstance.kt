@@ -1,12 +1,10 @@
 package com.hoon.microdustapp.data.api
 
-import android.util.Log
 import com.hoon.microdustapp.BuildConfig
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
-import com.hoon.microdustapp.data.model.region.RegionInfo
 import com.hoon.microdustapp.data.model.region.SearchRegionsInfo
 import com.hoon.microdustapp.data.util.constants.Url.AIR_KOREA_API_BASE_URL
 import com.hoon.microdustapp.data.util.constants.Url.KAKAO_API_BASE_URL
@@ -63,9 +61,11 @@ object RetrofitInstance {
     }
 
     suspend fun searchRegion(region: String): List<SearchRegionsInfo>? {
+
         return tMapApiService.searchRegion(TMapApiService.CATEGORIES.GU_GUN, region)
-            .body()
-            ?.searchRegionsInfo
+            .body()?.searchRegionsInfo
+            ?: tMapApiService.searchRegion(TMapApiService.CATEGORIES.LEGAL_DONG, region)
+                .body()?.searchRegionsInfo
     }
 
 

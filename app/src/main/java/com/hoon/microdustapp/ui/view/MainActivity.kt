@@ -13,6 +13,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,11 +27,16 @@ import com.hoon.microdustapp.R
 import com.hoon.microdustapp.data.api.RetrofitInstance
 import com.hoon.microdustapp.data.api.RetrofitInstance.getMeasureInfo
 import com.hoon.microdustapp.data.api.RetrofitInstance.getNearbyMeasuringStation
+import com.hoon.microdustapp.data.database.RegionDataBase
+import com.hoon.microdustapp.data.database.RegionEntity
 import com.hoon.microdustapp.data.model.AirPollutionModel
+import com.hoon.microdustapp.data.model.RegionModel
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
+import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
 import com.hoon.microdustapp.data.util.AirPollution
+import com.hoon.microdustapp.data.util.constants.Constants.INTENT_KEY_REGION_MODEL
 import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.databinding.LayoutDrawableViewBinding
 import com.hoon.microdustapp.databinding.LayoutForecastViewBinding
@@ -37,10 +44,10 @@ import com.hoon.microdustapp.databinding.LayoutMainViewBinding
 import com.hoon.microdustapp.ui.BaseActivity
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
+import com.hoon.microdustapp.ui.adapter.SearchRegionAdapter
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 /*
 코루틴 에러 핸들링 문제
@@ -62,9 +69,8 @@ https://onedaycodeing.tistory.com/60
 
 
 페이지 로딩 구현하기, 각 layout alpha 0 에서 1로 변경하기 -> 5번
-측정소 지도 구현 -> 4번
-지역 추가 기능 구현 -> 3번 -> 진행중, Tmap api, drawable layout + activity 화면전환 사용하기 !!
 
+지역 추가 기능 구현 ->  Tmap api, drawable layout + activity 화면전환 사용하기 !!
 https://greedy0110.tistory.com/52 화면전환 애니메이션 참고 글
 
 
@@ -90,6 +96,7 @@ refresh layout으로 변경
 
  */
 
+
 class MainActivity : BaseActivity() {
 
     companion object {
@@ -97,16 +104,24 @@ class MainActivity : BaseActivity() {
         const val PERMISSION_LOCATION_REQUEST_CODE = 101
     }
 
-    private val mainBinding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val mainBinding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(
+            layoutInflater
+        )
+    }
     private val mainViewBinding: LayoutMainViewBinding by lazy { mainBinding.layoutMainView }
     private val forecastViewBinding: LayoutForecastViewBinding by lazy { mainBinding.layoutForecastView }
     private val drawableViewBinding: LayoutDrawableViewBinding by lazy { mainBinding.layoutDrawableView }
 
-    private val scope = MainScope()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 현재 위치를 가져옴
     private lateinit var cancellationTokenSource: CancellationTokenSource // 현재 위치 접근 동작을 취소할 수 있는 토큰
+
     private lateinit var airPollutionListAdapter: AirPollutionListAdapter
     private lateinit var forecastVideoAdapter: ForecastVideoAdapter
+    private lateinit var searchRegionAdapter: SearchRegionAdapter
+
+    private val scope = MainScope()
+    private val db by lazy { RegionDataBase.getInstance(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,15 +130,62 @@ class MainActivity : BaseActivity() {
         initVariables()
         initPollutionListAdapter()
         initForecastVideoAdapter()
+        initSearchRegionAdapter()
+
         requestLocationPermission()
         updateForecastInfo()
         initGuideLinePosition()
         initDrawbleView()
+
+        // db에 저장되어있는 regionModel load
+        updateFavoriteRegion()
+    }
+
+    private fun updateFavoriteRegion() = scope.launch(Dispatchers.IO) {
+        val regionModels = mutableListOf<RegionModel>()
+
+        val regionEntities = db.regionDao().getAll()
+        regionEntities.forEach {
+            val model = RegionModel(it.regionId, it.description)
+            regionModels.add(model)
+        }
+        searchRegionAdapter.submitList(regionModels)
+    }
+
+    private fun initSearchRegionAdapter() {
+        searchRegionAdapter = SearchRegionAdapter {
+
+        }
+        drawableViewBinding.recyclerView.adapter = searchRegionAdapter
+        drawableViewBinding.recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
 
     private fun initDrawbleView() {
-        drawableViewBinding.editTextSearchRegion.setOnClickListener {
-            startActivity(Intent(this, SearchRegionActivity::class.java))
+        drawableViewBinding.btnSearchRegion.setOnClickListener {
+            val intent = Intent(this, SearchRegionActivity::class.java)
+            startActivitySearchRegionForResult.launch(intent)
+        }
+    }
+
+    private val startActivitySearchRegionForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val regionModel = result.data?.getParcelableExtra<RegionModel>(INTENT_KEY_REGION_MODEL)
+            regionModel?.let { regionModel ->
+
+                scope.launch(Dispatchers.IO) {
+                    // db 저장
+                    val entity = RegionEntity(regionModel.regionId, regionModel.description)
+                    db.regionDao().insertRegion(entity)
+
+                    // adapter update
+                    val models = searchRegionAdapter.currentList.toMutableList()
+                    models.add(regionModel)
+                    searchRegionAdapter.submitList(models)
+                }
+            }
         }
     }
 
@@ -291,7 +353,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.PM_10.pollutionName,
-                measureResult.pm10Grade,
+                measureResult.pm10Grade ?: Grade.UNKNOWN,
                 measureResult.pm10Value,
                 AirPollution.PM_10.maximumValue
             )
@@ -299,7 +361,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.PM_2_5.pollutionName,
-                measureResult.pm25Grade,
+                measureResult.pm25Grade ?: Grade.UNKNOWN,
                 measureResult.pm25Value,
                 AirPollution.PM_2_5.maximumValue
             )
@@ -307,7 +369,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.CAI.pollutionName,
-                measureResult.khaiGrade,
+                measureResult.khaiGrade ?: Grade.UNKNOWN,
                 measureResult.khaiValue,
                 AirPollution.CAI.maximumValue
             )
@@ -315,7 +377,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.O3.pollutionName,
-                measureResult.o3Grade,
+                measureResult.o3Grade ?: Grade.UNKNOWN,
                 measureResult.o3Value,
                 AirPollution.O3.maximumValue
             )
@@ -323,7 +385,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.NO2.pollutionName,
-                measureResult.no2Grade,
+                measureResult.no2Grade ?: Grade.UNKNOWN,
                 measureResult.no2Value,
                 AirPollution.NO2.maximumValue
             )
@@ -331,7 +393,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.CO.pollutionName,
-                measureResult.coGrade,
+                measureResult.coGrade ?: Grade.UNKNOWN,
                 measureResult.coValue,
                 AirPollution.CO.maximumValue
             )
@@ -339,7 +401,7 @@ class MainActivity : BaseActivity() {
         models.add(
             AirPollutionModel(
                 AirPollution.SO2.pollutionName,
-                measureResult.so2Grade,
+                measureResult.so2Grade ?: Grade.UNKNOWN,
                 measureResult.so2Value,
                 AirPollution.SO2.maximumValue
             )
@@ -349,6 +411,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult, stationInfo: StationInfo) {
+        Log.e(TAG, "test--enter")
         updateAddressFromGps(latitude, longitude)
         updateTimeText()
         updateGradeInfo(measureResult)
@@ -357,7 +420,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
-        val currentGrade = measureResult.pm10Grade
+        val currentGrade = measureResult.pm10Grade ?: Grade.UNKNOWN
         val currentVal = measureResult.pm10Value
 
         Log.e(TAG, "currentGrade=" + currentGrade.toString())
