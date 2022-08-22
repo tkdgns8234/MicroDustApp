@@ -1,6 +1,7 @@
 package com.hoon.microdustapp.data.api
 
 import com.hoon.microdustapp.BuildConfig
+import com.hoon.microdustapp.data.model.address.AddressResponse
 import com.hoon.microdustapp.data.model.tmcoordinate.TmCoordinateResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -17,4 +18,10 @@ interface KaKaoLocalApiService {
         @Query("x") longitude: Double
     ): Response<TmCoordinateResponse>
 
+    // get url에 고정된 쿼리 파라미터 추가 (output_coord=TM)
+    @Headers("Authorization: KakaoAK ${BuildConfig.KAKAO_API_KEY}")
+    @GET("/v2/local/search/address.json?size=20")
+    suspend fun getAddressFromKeyword(
+        @Query("query") query: String,
+    ): Response<AddressResponse>
 }

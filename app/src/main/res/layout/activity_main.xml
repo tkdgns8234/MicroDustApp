@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
@@ -9,92 +10,114 @@
     tools:background="@color/good"
     tools:context=".ui.view.MainActivity">
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <include
-                android:id="@+id/layoutMainView"
-                layout="@layout/layout_main_view" />
-
-            <include
-                android:id="@+id/layoutForecastView"
-                layout="@layout/layout_forecast_view" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:alpha="0"
+                tools:alpha="1"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/layoutMainView"
+                        layout="@layout/layout_main_view" />
+
+                    <include
+                        android:id="@+id/layoutForecastView"
+                        layout="@layout/layout_forecast_view" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/background_gray"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/tv_measure_station"
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="기준 측정소"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_measure_station_desc"
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/tv_measure_station"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="불당동" />
+
+                        <TextView
+                            android:id="@+id/tv_data_source"
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="자료 출처"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_measure_station_desc" />
+
+                        <TextView
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="한국환경공단(에어코리아)"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
+                            app:layout_constraintTop_toTopOf="@id/tv_data_source" />
+
+                        <TextView
+                            android:id="@+id/tv_caution"
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="주의"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_data_source" />
+
+                        <TextView
+                            style="@style/my_textView_style_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="측정소 현지 사정이나 데이터의 수신 상태에 따라 실제 날씨 및 농도 수치와 다를 수 있습니다."
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
+                            app:layout_constraintTop_toTopOf="@id/tv_caution" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/background_gray"
-                android:padding="20dp">
+                android:layout_gravity="center" />
 
-                <TextView
-                    android:id="@+id/tv_measure_station"
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="기준 측정소"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        </FrameLayout>
 
-                <TextView
-                    android:id="@+id/tv_measure_station_desc"
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tv_measure_station"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="불당동" />
-
-                <TextView
-                    android:id="@+id/tv_data_source"
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:text="자료 출처"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_measure_station_desc" />
-
-                <TextView
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="한국환경공단(에어코리아)"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
-                    app:layout_constraintTop_toTopOf="@id/tv_data_source" />
-
-                <TextView
-                    android:id="@+id/tv_caution"
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:text="주의"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_data_source" />
-
-                <TextView
-                    style="@style/my_textView_style_medium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="측정소 현지 사정이나 데이터의 수신 상태에 따라 실제 날씨 및 농도 수치와 다를 수 있습니다."
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/tv_measure_station_desc"
-                    app:layout_constraintTop_toTopOf="@id/tv_caution" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- drawerLayout의 swipe 영역 -->
     <include

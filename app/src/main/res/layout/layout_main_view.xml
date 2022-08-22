@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/good"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideLine1"
@@ -21,6 +22,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         tools:layout_constraintGuide_begin="@dimen/guideline2_top" />
+
+    <ImageView
+        android:id="@+id/iv_region_list"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="15dp"
+        android:src="@drawable/ic_list_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_location"

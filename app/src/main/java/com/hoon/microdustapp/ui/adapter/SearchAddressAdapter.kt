@@ -1,22 +1,21 @@
 package com.hoon.microdustapp.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hoon.microdustapp.data.model.RegionModel
+import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.databinding.ItemRegionBinding
 
-class SearchRegionAdapter(val onClick: (model: RegionModel) -> Unit) :
-    ListAdapter<RegionModel, SearchRegionAdapter.ViewHolder>(diffutils) {
+class SearchAddressAdapter(val onClick: (model: AddressModel) -> Unit) :
+    ListAdapter<AddressModel, SearchAddressAdapter.ViewHolder>(diffutils) {
 
     inner class ViewHolder(private val binding: ItemRegionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: RegionModel) = with(binding) {
-            textViewRegion.text = model.description
+        fun bind(model: AddressModel) = with(binding) {
+            textViewRegion.text = model.addressName
             root.setOnClickListener {
                 onClick(model)
             }
@@ -26,22 +25,22 @@ class SearchRegionAdapter(val onClick: (model: RegionModel) -> Unit) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SearchRegionAdapter.ViewHolder {
+    ): SearchAddressAdapter.ViewHolder {
         val binding = ItemRegionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SearchRegionAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchAddressAdapter.ViewHolder, position: Int) {
         holder.bind(currentList[position])
     }
 
     companion object {
-        private val diffutils = object : DiffUtil.ItemCallback<RegionModel>() {
-            override fun areItemsTheSame(oldItem: RegionModel, newItem: RegionModel): Boolean {
-                return oldItem.regionId == newItem.regionId
+        private val diffutils = object : DiffUtil.ItemCallback<AddressModel>() {
+            override fun areItemsTheSame(oldItem: AddressModel, newItem: AddressModel): Boolean {
+                return oldItem.addressName == newItem.addressName
             }
 
-            override fun areContentsTheSame(oldItem: RegionModel, newItem: RegionModel): Boolean {
+            override fun areContentsTheSame(oldItem: AddressModel, newItem: AddressModel): Boolean {
                 return oldItem == newItem
             }
 

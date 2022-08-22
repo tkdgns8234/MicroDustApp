@@ -1,14 +1,12 @@
 package com.hoon.microdustapp.data.api
 
 import com.hoon.microdustapp.BuildConfig
+import com.hoon.microdustapp.data.model.address.Document
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
-import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
-import com.hoon.microdustapp.data.model.region.SearchRegionsInfo
 import com.hoon.microdustapp.data.util.constants.Url.AIR_KOREA_API_BASE_URL
 import com.hoon.microdustapp.data.util.constants.Url.KAKAO_API_BASE_URL
-import com.hoon.microdustapp.data.util.constants.Url.TMAP_API_BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,8 +42,9 @@ object RetrofitInstance {
             // 필수 정보인 미세먼지, 초미세먼지 정보가 정상적으로 존재하는 경우 해당 데이터 return
             if (it.pm10Grade != null &&
                 it.pm25Grade != null &&
-                it.pm10Grade != Grade.UNKNOWN &&
-                it.pm25Grade != Grade.UNKNOWN) {
+                it.pm10Value.toIntOrNull() != null &&
+                it.pm25Value.toIntOrNull() != null
+            ) {
                 return it
             }
         }
@@ -60,14 +59,9 @@ object RetrofitInstance {
             ?.forecastItems
     }
 
-    suspend fun searchRegion(region: String): List<SearchRegionsInfo>? {
-
-        return tMapApiService.searchRegion(TMapApiService.CATEGORIES.GU_GUN, region)
-            .body()?.searchRegionsInfo
-            ?: tMapApiService.searchRegion(TMapApiService.CATEGORIES.LEGAL_DONG, region)
-                .body()?.searchRegionsInfo
+    suspend fun getAddressFromKeyword(keyword: String): List<Document>? {
+        return kakaoLocalApiService.getAddressFromKeyword(keyword).body()?.documents
     }
-
 
     val kakaoLocalApiService: KaKaoLocalApiService by lazy { getKakaoRetrofit().create(KaKaoLocalApiService::class.java) }
 
@@ -85,17 +79,6 @@ object RetrofitInstance {
     private fun getAirKoreaRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(AIR_KOREA_API_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(buildHttpClient())
-            .build()
-    }
-
-
-    val tMapApiService: TMapApiService by lazy { getTMapRetrofit().create(TMapApiService::class.java) }
-
-    private fun getTMapRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(TMAP_API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(buildHttpClient())
             .build()

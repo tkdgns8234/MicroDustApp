@@ -5,21 +5,21 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [RegionEntity::class], version = 1)
-abstract class RegionDataBase : RoomDatabase(){
-    abstract fun regionDao(): RegionDao
+@Database(entities = [AddressEntity::class], version = 1)
+abstract class AddressDataBase : RoomDatabase() {
+    abstract fun addressDao(): AddressDao
 
-    // google room db 페이지에서 싱글톤 생성을 권장
+    // google 에서 싱글톤 생성을 권장
     companion object {
-        private var instance: RegionDataBase? = null
+        private var instance: AddressDataBase? = null
 
         @Synchronized
-        fun getInstance(context: Context): RegionDataBase {
+        fun getInstance(context: Context): AddressDataBase {
             if (instance == null) {
-                synchronized(RegionDataBase::class){
+                synchronized(AddressDataBase::class) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
-                        RegionDataBase::class.java,
+                        AddressDataBase::class.java,
                         "user_database"
                     ).build()
                 }

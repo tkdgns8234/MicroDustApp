@@ -22,11 +22,11 @@ interface AirKoreaApiService {
             "serviceKey=${BuildConfig.AIR_KOREA_API_KEY}" +
             "&returnType=json" +
             "&dataTerm=month" +
+            "&numOfRows=300"+
             "&ver=1.3")
     suspend fun getMeasureInfo(
         @Query("stationName") stationName: String,
     ): Response<MeasurementResponse>
-
 
     @GET("/B552584/ArpltnInforInqireSvc/getMinuDustFrcstDspth?" +
             "serviceKey=${BuildConfig.AIR_KOREA_API_KEY}" +

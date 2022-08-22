@@ -4,7 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class RegionModel(
-    val regionId: String,
-    val description: String
+data class AddressModel(
+    val addressName: String,
+    val x: Double,
+    val y: Double
 ) : Parcelable

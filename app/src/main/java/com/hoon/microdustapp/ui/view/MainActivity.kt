@@ -11,6 +11,8 @@ import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -27,16 +29,16 @@ import com.hoon.microdustapp.R
 import com.hoon.microdustapp.data.api.RetrofitInstance
 import com.hoon.microdustapp.data.api.RetrofitInstance.getMeasureInfo
 import com.hoon.microdustapp.data.api.RetrofitInstance.getNearbyMeasuringStation
-import com.hoon.microdustapp.data.database.RegionDataBase
-import com.hoon.microdustapp.data.database.RegionEntity
+import com.hoon.microdustapp.data.database.AddressDataBase
+import com.hoon.microdustapp.data.database.AddressEntity
+import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.data.model.AirPollutionModel
-import com.hoon.microdustapp.data.model.RegionModel
 import com.hoon.microdustapp.data.model.forecast.ForecastItem
 import com.hoon.microdustapp.data.model.measure.Grade
 import com.hoon.microdustapp.data.model.measure.MeasureResult
 import com.hoon.microdustapp.data.model.measuringstation.StationInfo
 import com.hoon.microdustapp.data.util.AirPollution
-import com.hoon.microdustapp.data.util.constants.Constants.INTENT_KEY_REGION_MODEL
+import com.hoon.microdustapp.data.util.constants.Constants.INTENT_KEY_ADDRESS_MODEL
 import com.hoon.microdustapp.databinding.ActivityMainBinding
 import com.hoon.microdustapp.databinding.LayoutDrawableViewBinding
 import com.hoon.microdustapp.databinding.LayoutForecastViewBinding
@@ -44,7 +46,7 @@ import com.hoon.microdustapp.databinding.LayoutMainViewBinding
 import com.hoon.microdustapp.ui.BaseActivity
 import com.hoon.microdustapp.ui.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.ui.adapter.ForecastVideoAdapter
-import com.hoon.microdustapp.ui.adapter.SearchRegionAdapter
+import com.hoon.microdustapp.ui.adapter.SearchAddressAdapter
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -74,26 +76,21 @@ https://onedaycodeing.tistory.com/60
 https://greedy0110.tistory.com/52 화면전환 애니메이션 참고 글
 
 
-측정 정보(자료 출처 추가) -> 2번 -> 완료
-viewpager 인디케이터 추가   -> 1번 (미세 - 초미세 전환), 영상 출처 -> 완료
+측정 정보(자료 출처 추가)  -> 완료
+viewpager 인디케이터 추가   -> (미세 - 초미세 전환), 영상 출처 -> 완료
+로딩 구현 ->완료
+refresh layout으로 변경 -> 완료
+애니메이션 구현 -> 완료
+지역추가 기능 구현 -> 완료
 
-행동요령 -> 거의 null만 들어옴
-
-측정정보
-측정소
-날짜
-출처
-
-로딩 구현
-
-refresh layout으로 변경
-
-애니메이션 구현
-
-공유기능 구현
-
-지역추가 기능 구현 dsts
-
+TODO::
+ 아키텍처 패턴 적용
+ 공유기능 구현
+ premission 거부했을 때 로직 추가
+ 앱의 string 관리
+ 전체적인 리팩토링
+ xml 변수 명 변경
+ rest api 사용 시 exception 관리 철저
  */
 
 
@@ -105,9 +102,7 @@ class MainActivity : BaseActivity() {
     }
 
     private val mainBinding: ActivityMainBinding by lazy {
-        ActivityMainBinding.inflate(
-            layoutInflater
-        )
+        ActivityMainBinding.inflate(layoutInflater)
     }
     private val mainViewBinding: LayoutMainViewBinding by lazy { mainBinding.layoutMainView }
     private val forecastViewBinding: LayoutForecastViewBinding by lazy { mainBinding.layoutForecastView }
@@ -118,72 +113,102 @@ class MainActivity : BaseActivity() {
 
     private lateinit var airPollutionListAdapter: AirPollutionListAdapter
     private lateinit var forecastVideoAdapter: ForecastVideoAdapter
-    private lateinit var searchRegionAdapter: SearchRegionAdapter
+    private lateinit var searchAddressAdapter: SearchAddressAdapter
 
     private val scope = MainScope()
-    private val db by lazy { RegionDataBase.getInstance(applicationContext) }
+    private val db by lazy { AddressDataBase.getInstance(applicationContext) }
+
+    private var currentLatitude: Double? = null
+    private var currentLongitude: Double? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
 
+        bindViews()
         initVariables()
         initPollutionListAdapter()
         initForecastVideoAdapter()
         initSearchRegionAdapter()
 
         requestLocationPermission()
-        updateForecastInfo()
         initGuideLinePosition()
         initDrawbleView()
 
         // db에 저장되어있는 regionModel load
-        updateFavoriteRegion()
+        updateAddressList()
     }
 
-    private fun updateFavoriteRegion() = scope.launch(Dispatchers.IO) {
-        val regionModels = mutableListOf<RegionModel>()
+    private fun updateUI(latitude: Double, longitude: Double) {
+        mainBinding.progressBar.visibility = View.VISIBLE
+        updateMainUIWithCoordinate(latitude, longitude)
+        updateForecast()
+        mainBinding.progressBar.visibility = View.GONE
+        mainBinding.scrollView.animate()
+            .alpha(1F)
+            .start()
+    }
 
-        val regionEntities = db.regionDao().getAll()
-        regionEntities.forEach {
-            val model = RegionModel(it.regionId, it.description)
-            regionModels.add(model)
+    private fun bindViews() {
+        mainBinding.swipeLayout.setOnRefreshListener {
+            updateUI(currentLatitude!!, currentLongitude!!)
+            mainBinding.swipeLayout.isRefreshing = false
         }
-        searchRegionAdapter.submitList(regionModels)
+
+        // ScrollView와 SwipeRefreshLayout 함께 사용하기 위함
+        mainBinding.scrollView.viewTreeObserver.addOnScrollChangedListener {
+            mainBinding.swipeLayout.isEnabled = (mainBinding.scrollView.scrollY == 0)
+        }
+    }
+
+    private fun updateAddressList() = scope.launch(Dispatchers.IO) {
+        val models = mutableListOf<AddressModel>()
+
+        val entities = db.addressDao().getAll()
+        entities.forEach { entity ->
+            val model = AddressModel(entity.addressName, entity.x, entity.y)
+            models.add(model)
+        }
+        withContext(Dispatchers.Main) {
+            searchAddressAdapter.submitList(models)
+        }
     }
 
     private fun initSearchRegionAdapter() {
-        searchRegionAdapter = SearchRegionAdapter {
-
+        searchAddressAdapter = SearchAddressAdapter {
+            updateUI(it.y, it.x)
+            mainBinding.root.closeDrawer(Gravity.LEFT)
         }
-        drawableViewBinding.recyclerView.adapter = searchRegionAdapter
+        drawableViewBinding.recyclerView.adapter = searchAddressAdapter
         drawableViewBinding.recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
 
     private fun initDrawbleView() {
         drawableViewBinding.btnSearchRegion.setOnClickListener {
-            val intent = Intent(this, SearchRegionActivity::class.java)
-            startActivitySearchRegionForResult.launch(intent)
+            val intent = Intent(this, SearchAddressActivity::class.java)
+            startActivityForResult.launch(intent)
         }
     }
 
-    private val startActivitySearchRegionForResult = registerForActivityResult(
+    private val startActivityForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            val regionModel = result.data?.getParcelableExtra<RegionModel>(INTENT_KEY_REGION_MODEL)
-            regionModel?.let { regionModel ->
-
+            val addressModel =
+                result.data?.getParcelableExtra<AddressModel>(INTENT_KEY_ADDRESS_MODEL)
+            addressModel?.let {
                 scope.launch(Dispatchers.IO) {
                     // db 저장
-                    val entity = RegionEntity(regionModel.regionId, regionModel.description)
-                    db.regionDao().insertRegion(entity)
+                    val entity = AddressEntity(it.addressName, it.x, it.y)
+                    db.addressDao().insert(entity)
 
                     // adapter update
-                    val models = searchRegionAdapter.currentList.toMutableList()
-                    models.add(regionModel)
-                    searchRegionAdapter.submitList(models)
+                    val models = searchAddressAdapter.currentList.toMutableList() //call by ref 방지
+                    models.add(it)
+                    withContext(Dispatchers.Main) {
+                        searchAddressAdapter.submitList(models)
+                    }
                 }
             }
         }
@@ -202,7 +227,6 @@ class MainActivity : BaseActivity() {
         }
 
         with(mainViewBinding) {
-            Log.e(TAG, "height= " + height)
 
             guideLine1.setGuidelineBegin((height * 0.63).toInt())
             guideLine2.setGuidelineBegin((height * 0.93).toInt())
@@ -281,27 +305,41 @@ class MainActivity : BaseActivity() {
             LocationRequest.PRIORITY_HIGH_ACCURACY, // 한번만 요청할것이기에 priority high 로 요청
             cancellationTokenSource.token
         ).addOnSuccessListener { location ->
+            updateUI(location.latitude, location.longitude)
+        }
+    }
 
-            //scope 별 catch 구문 2개 사용하는것보다 scope에 exception handler 설정
-            val errorHandler = CoroutineExceptionHandler { _, exception ->
-                Toast.makeText(this, "미세먼지 측정 정보를 불러오는데 실패하였습니다.", Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "${exception.printStackTrace()}")
-            }
+    private fun updateMainUIWithCoordinate( // latitude: 위도,y longitude: 경도,x
+        latitude: Double,
+        longitude: Double
+    ) {
+        currentLatitude = latitude
+        currentLongitude = longitude
 
-            scope.launch(errorHandler) {
-                withContext(Dispatchers.IO) {
-                    val stationInfo = getNearbyMeasuringStation(location.latitude, location.longitude)
-                    val measureResult = getMeasureInfo(stationInfo?.stationName!!)
+        //scope 별 catch 구문 2개 사용하는것보다 scope에 exception handler 설정
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            Toast.makeText(this, "미세먼지 측정 정보를 불러오는데 실패하였습니다.", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "${exception.printStackTrace()}")
+        }
 
-                    withContext(Dispatchers.Main) {
-                        updateMainUI(location.latitude, location.longitude, measureResult!!, stationInfo)
-                    }
+        scope.launch(errorHandler) {
+            withContext(Dispatchers.IO) {
+                val stationInfo = getNearbyMeasuringStation(latitude, longitude)
+                val measureResult = getMeasureInfo(stationInfo?.stationName!!)
+
+                withContext(Dispatchers.Main) {
+                    updateMainUI(
+                        latitude,
+                        longitude,
+                        measureResult!!,
+                        stationInfo
+                    )
                 }
             }
         }
     }
 
-    private fun updateForecastInfo() = scope.launch(Dispatchers.IO) {
+    private fun updateForecast() {
         val calendar = Calendar.getInstance()
         calendar.time = Date()
 
@@ -312,9 +350,11 @@ class MainActivity : BaseActivity() {
         }
         val searchDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
 
-        RetrofitInstance.getForecastInfo(searchDate)?.let { forecastItems ->
-            scope.launch(Dispatchers.Main) {
-                updateForecastUI(forecastItems)
+        scope.launch(Dispatchers.IO) {
+            RetrofitInstance.getForecastInfo(searchDate)?.let { forecastItems ->
+                withContext(Dispatchers.Main) {
+                    updateForecastUI(forecastItems)
+                }
             }
         }
     }
@@ -411,19 +451,21 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateMainUI(latitude: Double, longitude: Double, measureResult: MeasureResult, stationInfo: StationInfo) {
-        Log.e(TAG, "test--enter")
         updateAddressFromGps(latitude, longitude)
         updateTimeText()
         updateGradeInfo(measureResult)
         updateAirPollutionList(measureResult)
-        mainBinding.tvMeasureStationDesc.text = "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
+        mainBinding.tvMeasureStationDesc.text =
+            "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
+        mainBinding.layoutMainView.ivRegionList.setOnClickListener {
+            mainBinding.root.openDrawer(Gravity.LEFT)
+        }
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
         val currentGrade = measureResult.pm10Grade ?: Grade.UNKNOWN
         val currentVal = measureResult.pm10Value
 
-        Log.e(TAG, "currentGrade=" + currentGrade.toString())
         ivEmoji.setImageResource(currentGrade.emojiDrawableID)
         tvGrade.text = currentGrade.gradeText
         tvDescription.text = resources.getString(currentGrade.descStringID)
@@ -436,7 +478,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateAddressFromGps(latitude: Double, longitude: Double) {
-        Log.e(TAG, "latitude: ${latitude}, longitude: ${longitude}")
         val geocoder = Geocoder(this, Locale.KOREAN)
         val address = geocoder.getFromLocation(latitude, longitude, 1).firstOrNull()
 
@@ -451,7 +492,7 @@ class MainActivity : BaseActivity() {
 
     private fun updateTimeText() {
         val now = System.currentTimeMillis()
-        mainViewBinding.tvTime.text = SimpleDateFormat("HH:mma").format(Date(now))
+        mainViewBinding.tvTime.text = SimpleDateFormat("HH:mm a").format(Date(now))
     }
 
     private fun requestLocationPermission() {

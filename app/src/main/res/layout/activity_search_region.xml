@@ -8,7 +8,7 @@
     android:padding="10dp"
     app:behavior_peekHeight="0dp"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".ui.view.SearchRegionActivity"
+    tools:context=".ui.view.SearchAddressActivity"
     android:fitsSystemWindows="true">
 
     <EditText
@@ -27,7 +27,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/iv_close"
