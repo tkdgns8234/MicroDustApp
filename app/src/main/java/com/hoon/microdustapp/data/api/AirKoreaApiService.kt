@@ -1,9 +1,9 @@
 package com.hoon.microdustapp.data.api
 
 import com.hoon.microdustapp.BuildConfig
-import com.hoon.microdustapp.data.model.forecast.ForecastResponse
-import com.hoon.microdustapp.data.model.measure.MeasurementResponse
-import com.hoon.microdustapp.data.model.measuringstation.MeasuringStationResponse
+import com.hoon.microdustapp.data.response.forecast.ForecastResponse
+import com.hoon.microdustapp.data.response.measure.MeasurementResponse
+import com.hoon.microdustapp.data.response.measuringstation.MeasuringStationResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

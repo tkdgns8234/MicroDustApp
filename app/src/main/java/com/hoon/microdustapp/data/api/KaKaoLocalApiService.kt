@@ -1,8 +1,8 @@
 package com.hoon.microdustapp.data.api
 
 import com.hoon.microdustapp.BuildConfig
-import com.hoon.microdustapp.data.model.address.AddressResponse
-import com.hoon.microdustapp.data.model.tmcoordinate.TmCoordinateResponse
+import com.hoon.microdustapp.data.response.address.AddressResponse
+import com.hoon.microdustapp.data.response.tmcoordinate.TmCoordinateResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers

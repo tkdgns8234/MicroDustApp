@@ -1,6 +1,6 @@
 package com.hoon.microdustapp.data.model
 
-import com.hoon.microdustapp.data.model.measure.Grade
+import com.hoon.microdustapp.data.response.measure.Grade
 
 data class AirPollutionModel(
     val name: String, // 이름 e.g) CO2
