@@ -3,9 +3,10 @@ package com.hoon.microdustapp.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hoon.microdustapp.R
+import org.koin.androidx.scope.ScopeActivity
 
 open class BaseActivity(private val transitionMode: TransitionMode = TransitionMode.NONE) :
-    AppCompatActivity() {
+    ScopeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

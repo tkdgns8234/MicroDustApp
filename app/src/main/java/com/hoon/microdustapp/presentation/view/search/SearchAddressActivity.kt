@@ -11,9 +11,8 @@ import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.databinding.ActivitySearchRegionBinding
 import com.hoon.microdustapp.presentation.BaseActivity
 import com.hoon.microdustapp.presentation.view.main.MainActivity
-import com.hoon.microdustapp.presentation.adapter.SearchAddressAdapter
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import com.hoon.microdustapp.presentation.adapter.AddressAdapter
+import com.hoon.microdustapp.presentation.adapter.holder.SearchViewHolder
 import org.koin.android.ext.android.inject
 
 class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddressContract.View {
@@ -23,8 +22,7 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
     private val binding: ActivitySearchRegionBinding by lazy {
         ActivitySearchRegionBinding.inflate(layoutInflater)
     }
-    private val scope = MainScope()
-    private lateinit var searchAddressAdapter: SearchAddressAdapter
+    private lateinit var addressAdapter: AddressAdapter<SearchViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +34,6 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
     }
 
     override fun onDestroy() {
-        scope.cancel()
         presenter.onDestroyView()
         super.onDestroy()
     }
@@ -50,13 +47,12 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
     }
 
     override fun updateAddressList(adressList: List<AddressModel>?) {
-        searchAddressAdapter.submitList(adressList)
+        addressAdapter.submitList(adressList)
     }
 
-    override fun handleAddFavoriteAddressResult(addressModel: AddressModel?) {
-        // 이미 추가된 favorite address 가 아니면 activity 종료 후 favorite address 에 추가
-        addressModel?.let {
-            val intent = MainActivity.newIntent(this, it)
+    override fun handleAddFavoriteAddressResult(isExist: Boolean, addressModel: AddressModel) {
+        if (!isExist) { // 이미 추가된 favorite address 가 아니면 activity 종료 후 favorite address 에 추가
+            val intent = MainActivity.newIntent(this, addressModel)
             setResult(RESULT_OK, intent)
             finish()
         }
@@ -65,10 +61,11 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
     private fun initViews() = with(binding) {
         ivClose.setOnClickListener { finish() }
 
-        searchAddressAdapter = SearchAddressAdapter { model: AddressModel ->
-            presenter.addFavoriteAddress(model.addressName)
-        }
-        addressRecyclerView.adapter = searchAddressAdapter
+        addressAdapter =
+            AddressAdapter(AddressAdapter.Companion.HolderType.TYPE_SEARCH) { model: AddressModel ->
+                presenter.addFavoriteAddress(model)
+            }
+        addressRecyclerView.adapter = addressAdapter
         addressRecyclerView.layoutManager =
             LinearLayoutManager(this@SearchAddressActivity, LinearLayoutManager.VERTICAL, false)
     }

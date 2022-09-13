@@ -1,5 +1,6 @@
 package com.hoon.microdustapp.presentation.view.search
 
+import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.data.repository.AddressRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -16,12 +17,15 @@ class SearchAddressPresenter(
 
     override fun onCreateView() {}
 
-    override fun onDestroyView() { scope.cancel() }
+    override fun onDestroyView() {
+        scope.cancel()
+    }
 
-    override fun addFavoriteAddress(addressName: String) {
+    override fun addFavoriteAddress(addressModel: AddressModel) {
         scope.launch {
-            val model = addressRepository.findAddressDB(addressName)
-            view.handleAddFavoriteAddressResult(model)
+            val isExist = addressRepository.findAddressDB(addressModel.addressName) != null
+
+            view.handleAddFavoriteAddressResult(isExist, addressModel)
         }
     }
 

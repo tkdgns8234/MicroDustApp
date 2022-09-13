@@ -10,13 +10,13 @@ interface SearchAddressContract {
 
         fun hideLoadingProgress()
 
-        fun handleAddFavoriteAddressResult(addressModel: AddressModel?)
+        fun handleAddFavoriteAddressResult(isExist: Boolean, addressModel: AddressModel)
 
         fun updateAddressList(adressList: List<AddressModel>?)
     }
 
     interface Presenter: BasePresenter {
-        fun addFavoriteAddress(addressName: String)
+        fun addFavoriteAddress(addressModel: AddressModel)
 
         fun getAddressListFromKeyword(query: String)
     }

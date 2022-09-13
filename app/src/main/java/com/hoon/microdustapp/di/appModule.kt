@@ -18,13 +18,13 @@ val appModule = module {
 
     scope<MainActivity> {
         scoped<MainContract.Presenter> {
-            MainPresenter(getSource(), get(), get())
+            MainPresenter(get<MainActivity>(), get(), get())
         }
     }
 
     scope<SearchAddressActivity> {
         scoped<SearchAddressContract.Presenter> {
-            SearchAddressPresenter(getSource(), get())
+            SearchAddressPresenter(get<SearchAddressActivity>(), get())
         }
     }
 

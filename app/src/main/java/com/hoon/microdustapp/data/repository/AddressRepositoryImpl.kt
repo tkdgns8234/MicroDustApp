@@ -1,5 +1,6 @@
 package com.hoon.microdustapp.data.repository
 
+import android.util.Log
 import com.hoon.microdustapp.data.api.KaKaoLocalApiService
 import com.hoon.microdustapp.data.database.AddressDao
 import com.hoon.microdustapp.data.database.AddressEntity
@@ -48,6 +49,8 @@ class AddressRepositoryImpl(
             val tmx = response.body()!!.documents.first().x
             val tmy = response.body()!!.documents.first().y
 
+            Log.e("Test", "tmx= " + tmx.toString() + "tmy =" + tmy.toString())
+
             return@withContext Pair(tmx, tmy)
         }
 
@@ -59,5 +62,9 @@ class AddressRepositoryImpl(
         withContext(ioDispatcher) {
             addressDao.find(addressName)?.toModel()
         }
+
+    override suspend fun deleteAddressDB(addressModel: AddressModel) {
+        addressDao.delete(addressModel.toEntity())
+    }
 
 }

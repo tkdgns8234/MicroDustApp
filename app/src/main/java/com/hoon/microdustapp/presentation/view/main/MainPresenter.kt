@@ -4,6 +4,7 @@ import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.data.repository.AddressRepository
 import com.hoon.microdustapp.data.repository.AirPollutionRepository
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class MainPresenter(
@@ -23,11 +24,11 @@ internal class MainPresenter(
         scope.cancel()
     }
 
-    private fun observeFavoriteAddressFlow() = scope.launch {
+    private fun observeFavoriteAddressFlow() {
         addressRepository.addressFlow
             .onEach { addressList ->
                 view.updateFavoriteAddress(addressList)
-            }
+            }.launchIn(scope)
     }
 
     /**
@@ -55,6 +56,12 @@ internal class MainPresenter(
     override fun insertAddressDB(addressModel: AddressModel) {
         scope.launch {
             addressRepository.insertAddressDB(addressModel)
+        }
+    }
+
+    override fun deleteAddressDB(addressModel: AddressModel) {
+        scope.launch {
+            addressRepository.deleteAddressDB(addressModel)
         }
     }
 

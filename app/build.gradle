@@ -21,7 +21,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_API_KEY", properties['KAKAO_API_KEY']
         buildConfigField "String", "AIR_KOREA_API_KEY", properties['AIR_KOREA_API_KEY']
-//        buildConfigField "String", "TMAP_API_KEY", properties['TMAP_API_KEY']
     }
 
     buildTypes {
@@ -41,6 +40,9 @@ android {
     buildFeatures.viewBinding = true
 
 }
+ext {
+    koin_version= "3.2.0"
+}
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -50,7 +52,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.github.bumptech.glide:glide:4.13.2'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
@@ -62,12 +64,21 @@ dependencies {
     kapt("androidx.room:room-compiler:2.4.2")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.4.2")
-
     // koin DI
-    implementation "org.koin:koin-android:2.1.5"
-    implementation "org.koin:koin-android-scope:2.1.5"
-    implementation "org.koin:koin-android-viewmodel:2.1.5"
-    implementation "org.koin:koin-android-ext:2.1.5"
+    // Koin main features for Android
+    implementation "io.insert-koin:koin-android:$koin_version"
+// No more koin-android-viewmodel, koin-android-scope, koin-android-fragment
+
+// Java Compatibility
+    implementation "io.insert-koin:koin-android-compat:$koin_version"
+// Jetpack WorkManager
+    implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"
+// Navigation Graph
+    implementation "io.insert-koin:koin-androidx-navigation:$koin_version"
+//    implementation "org.koin:koin-android:2.1.5"
+//    implementation "org.koin:koin-android-scope:2.1.5"
+//    implementation "org.koin:koin-android-viewmodel:2.1.5"
+//    implementation "org.koin:koin-android-ext:2.1.5"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -28,5 +28,7 @@ interface MainContract {
         fun updateForecastInfo(searchDate: String)
 
         fun insertAddressDB(addressModel: AddressModel)
+
+        fun deleteAddressDB(addressModel: AddressModel)
     }
 }

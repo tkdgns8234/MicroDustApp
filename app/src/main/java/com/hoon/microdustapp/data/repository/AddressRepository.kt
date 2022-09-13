@@ -14,5 +14,7 @@ interface AddressRepository {
 
     suspend fun insertAddressDB(addressModel: AddressModel)
 
+    suspend fun deleteAddressDB(addressModel: AddressModel)
+
     suspend fun findAddressDB(addressName: String): AddressModel?
 }

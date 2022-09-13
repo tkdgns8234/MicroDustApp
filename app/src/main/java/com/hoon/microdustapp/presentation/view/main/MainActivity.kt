@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.LocationRequest
@@ -39,7 +40,9 @@ import com.hoon.microdustapp.extensions.toast
 import com.hoon.microdustapp.presentation.BaseActivity
 import com.hoon.microdustapp.presentation.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.presentation.adapter.ForecastVideoAdapter
-import com.hoon.microdustapp.presentation.adapter.SearchAddressAdapter
+import com.hoon.microdustapp.presentation.adapter.AddressAdapter
+import com.hoon.microdustapp.presentation.adapter.callback.ItemTouchHelperCallback
+import com.hoon.microdustapp.presentation.adapter.holder.FavoriteViewHolder
 import com.hoon.microdustapp.presentation.view.search.SearchAddressActivity
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
@@ -66,7 +69,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     private lateinit var airPollutionListAdapter: AirPollutionListAdapter
     private lateinit var forecastVideoAdapter: ForecastVideoAdapter
-    private lateinit var searchAddressAdapter: SearchAddressAdapter
+    private lateinit var addressAdapter: AddressAdapter<FavoriteViewHolder>
 
     override fun showLoadingProgress() {
         mainBinding.progressBar.visibility = View.VISIBLE
@@ -104,18 +107,24 @@ class MainActivity : BaseActivity(), MainContract.View {
     private fun initForecastVideoAdapter() = with(forecastViewBinding) {
         forecastVideoAdapter = ForecastVideoAdapter()
         forecastVideoViewPager.adapter = forecastVideoAdapter
-        forecastVideoViewPager.registerOnPageChangeCallback(getPageChangeCallback())
+        forecastVideoViewPager.registerOnPageChangeCallback(pageChangeCallback())
     }
 
-    private fun initSearchAddressAdapter() {
-        searchAddressAdapter = SearchAddressAdapter {
+    private fun initSearchAddressAdapter() = with(drawableViewBinding) {
+        addressAdapter = AddressAdapter(AddressAdapter.Companion.HolderType.TYPE_FAVORITE) {
             setPosition(it.y, it.x)
             updateUI()
             mainBinding.root.closeDrawer(Gravity.LEFT)
         }
-        drawableViewBinding.recyclerView.adapter = searchAddressAdapter
-        drawableViewBinding.recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = addressAdapter
+        recyclerView.layoutManager =
+            LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+
+        val itemTouchHelperCallback = ItemTouchHelper(ItemTouchHelperCallback { idx ->
+            val addressModel = addressAdapter.currentList[idx]
+            presenter.deleteAddressDB(addressModel)
+        })
+        itemTouchHelperCallback.attachToRecyclerView(recyclerView)
     }
 
     private fun bindViews() = with(mainBinding) {
@@ -136,18 +145,16 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     private fun updateUI() {
-        showLoadingProgress()
         presenter.updateAirPollutionInfo(currentLatitude!!, currentLongitude!!)
         updateForecastInfo()
 
         mainBinding.scrollView.animate()
             .alpha(1F)
             .start()
-        hideLoadingProgress()
     }
 
     override fun updateFavoriteAddress(addressList: List<AddressModel>) {
-        searchAddressAdapter.submitList(addressList)
+        addressAdapter.submitList(addressList)
     }
 
     override fun onDestroy() {
@@ -263,6 +270,7 @@ class MainActivity : BaseActivity(), MainContract.View {
         measureResult: MeasureResult,
         stationInfo: StationInfo
     ) {
+        showLoadingProgress()
         updateAddressFromGps()
         updateTimeText()
         updateGradeInfo(measureResult)
@@ -272,6 +280,10 @@ class MainActivity : BaseActivity(), MainContract.View {
         mainBinding.layoutMainView.ivRegionList.setOnClickListener {
             mainBinding.root.openDrawer(Gravity.LEFT)
         }
+
+        mainViewBinding.backgroundView.visibility = View.VISIBLE
+        mainViewBinding.microDustProgressbar.visibility = View.VISIBLE
+        hideLoadingProgress()
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
@@ -384,6 +396,7 @@ class MainActivity : BaseActivity(), MainContract.View {
         ).addOnSuccessListener { location ->
             // 현재 좌표 update
             setPosition(location.latitude, location.longitude)
+            updateUI()
         }
     }
 
@@ -397,7 +410,7 @@ class MainActivity : BaseActivity(), MainContract.View {
         e.printStackTrace()
     }
 
-    private fun getPageChangeCallback(): ViewPager2.OnPageChangeCallback {
+    private fun pageChangeCallback(): ViewPager2.OnPageChangeCallback {
         with(forecastViewBinding) {
             return object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -425,8 +438,9 @@ class MainActivity : BaseActivity(), MainContract.View {
         const val TAG = "MainActivity"
         const val PERMISSION_LOCATION_REQUEST_CODE = 101
         const val INTENT_KEY_ADDRESS_MODEL = "AddressModel"
-        fun newIntent(context: Context, addressModel: AddressModel) = Intent(context, MainActivity::class.java).apply {
-            putExtra(INTENT_KEY_ADDRESS_MODEL, addressModel)
-        }
+        fun newIntent(context: Context, addressModel: AddressModel) =
+            Intent(context, MainActivity::class.java).apply {
+                putExtra(INTENT_KEY_ADDRESS_MODEL, addressModel)
+            }
     }
 }

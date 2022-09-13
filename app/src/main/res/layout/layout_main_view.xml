@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:background="@color/good"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:background="@color/good">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideLine1"
@@ -109,14 +108,16 @@
         tools:text="공기가 아주 맑아요 외출합시다 !__!" />
 
     <View
-        android:id="@+id/backgroundView_1"
+        android:id="@+id/backgroundView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/background_light_gray"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/guideLine2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guideLine1" />
+        app:layout_constraintTop_toTopOf="@id/guideLine1"
+        tools:visibility="visible" />
 
     <ProgressBar
         android:id="@+id/micro_dust_progressbar"
@@ -126,11 +127,13 @@
         android:max="150"
         android:paddingHorizontal="10dp"
         android:progressDrawable="@drawable/item_progressbar_background"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rv_air_pollution"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/backgroundView_1"
-        tools:progress="30" />
+        app:layout_constraintTop_toTopOf="@+id/backgroundView"
+        tools:progress="30"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/micro_dust_progressbar_text"
@@ -152,7 +155,7 @@
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@id/backgroundView_1"
+        app:layout_constraintBottom_toBottomOf="@id/backgroundView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/micro_dust_progressbar"
