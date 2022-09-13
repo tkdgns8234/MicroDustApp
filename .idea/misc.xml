@@ -49,6 +49,7 @@
         <entry key="app/src/main/res/layout/layout_drawable_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/layout_forecast_view.xml" value="0.24074074074074073" />
         <entry key="app/src/main/res/layout/layout_main_view.xml" value="0.24074074074074073" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
       </map>
     </option>
   </component>
