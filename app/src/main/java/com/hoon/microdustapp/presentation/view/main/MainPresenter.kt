@@ -41,7 +41,9 @@ internal class MainPresenter(
                 airPollutionRepository.getNearbyMeasuringStation(latitude, longitude)
             val measureResult =
                 airPollutionRepository.getMeasureInfo(measureStationInfo?.stationName!!)
+            view.showLoadingProgress()
             view.updateMainUI(measureResult!!, measureStationInfo)
+            view.hideLoadingProgress()
         }
     }
 

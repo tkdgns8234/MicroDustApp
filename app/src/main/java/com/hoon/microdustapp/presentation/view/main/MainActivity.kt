@@ -270,7 +270,6 @@ class MainActivity : BaseActivity(), MainContract.View {
         measureResult: MeasureResult,
         stationInfo: StationInfo
     ) {
-        showLoadingProgress()
         updateAddressFromGps()
         updateTimeText()
         updateGradeInfo(measureResult)
@@ -283,7 +282,6 @@ class MainActivity : BaseActivity(), MainContract.View {
 
         mainViewBinding.backgroundView.visibility = View.VISIBLE
         mainViewBinding.microDustProgressbar.visibility = View.VISIBLE
-        hideLoadingProgress()
     }
 
     private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
