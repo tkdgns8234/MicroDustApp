@@ -48,6 +48,13 @@ import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * 1. 현재 위, 경도 좌표값을 통해 tm 좌표를 구하고(kakao api)
+ * 2. tm 좌표값을 기반으로 근처 미세먼지 측정소를 조회
+ * 3. 근처 미세먼지 측정소 정보를 통해 (위, 경도 좌표, 측정소 명 등)
+ * 4. 현재 대기오염 정보, 대기 예보 정보를 받아옴
+ */
+
 class MainActivity : BaseActivity(), MainContract.View {
 
     override val presenter: MainContract.Presenter by inject()

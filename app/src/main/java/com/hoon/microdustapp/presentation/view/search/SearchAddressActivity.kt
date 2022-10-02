@@ -14,6 +14,11 @@ import com.hoon.microdustapp.presentation.view.main.MainActivity
 import com.hoon.microdustapp.presentation.adapter.SearchAddressAdapter
 import org.koin.android.ext.android.inject
 
+
+/**
+ * kakaoLocalApiService 를 통해 키워드에 해당하는 지역 명을 가져온 후 화면에 표시
+ */
+
 class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddressContract.View {
 
     override val presenter: SearchAddressContract.Presenter by inject()
