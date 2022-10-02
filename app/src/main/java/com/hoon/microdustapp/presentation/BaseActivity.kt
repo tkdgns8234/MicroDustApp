@@ -37,18 +37,6 @@ open class BaseActivity(private val transitionMode: TransitionMode = TransitionM
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-
-        if (isFinishing) {
-            when (transitionMode) {
-                TransitionMode.HORIZONTAL -> overridePendingTransition(R.anim.none, R.anim.horizon_exit)
-                TransitionMode.VERTICAL -> overridePendingTransition(R.anim.none, R.anim.vertical_exit)
-                TransitionMode.NONE -> Unit
-            }
-        }
-    }
-
     enum class TransitionMode {
         NONE,
         HORIZONTAL,
