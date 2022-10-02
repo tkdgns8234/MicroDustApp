@@ -32,7 +32,7 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/iv_close"
         app:layout_constraintTop_toBottomOf="@id/editTextSearchRegion"
-        tools:listitem="@layout/item_region" />
+        tools:listitem="@layout/item_search_address" />
 
     <ImageView
         android:id="@+id/iv_close"

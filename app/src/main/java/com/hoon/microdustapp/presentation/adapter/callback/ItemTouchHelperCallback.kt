@@ -2,8 +2,7 @@ package com.hoon.microdustapp.presentation.adapter.callback
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.hoon.microdustapp.presentation.adapter.AddressAdapter
-import com.hoon.microdustapp.presentation.adapter.holder.FavoriteViewHolder
+import com.hoon.microdustapp.presentation.adapter.FavoriteAddressAdapter
 
 class ItemTouchHelperCallback(
     private val deleteItemCallback: (Int) -> Unit
@@ -18,7 +17,7 @@ class ItemTouchHelperCallback(
     ): Boolean {
         // onMove callback에서 어댑터의 위치를 계속 변환해야함
         // 따라서 adapterPosition 를 사용해 어댑터의 위치를 계속 추적해야한다.
-        (recyclerView.adapter as AddressAdapter).moveItem(
+        (recyclerView.adapter as FavoriteAddressAdapter).moveItem(
             viewHolder.adapterPosition,
             target.adapterPosition
         )
@@ -26,7 +25,7 @@ class ItemTouchHelperCallback(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        val position = (viewHolder as FavoriteViewHolder).adapterPosition
+        val position = (viewHolder as FavoriteAddressAdapter.ViewHolder).adapterPosition
         deleteItemCallback(position)
     }
 
@@ -35,7 +34,7 @@ class ItemTouchHelperCallback(
         super.onSelectedChanged(viewHolder, actionState)
         when (actionState) {
             ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.ACTION_STATE_SWIPE -> {
-                (viewHolder as FavoriteViewHolder).setAlpha(0.5f)
+                (viewHolder as FavoriteAddressAdapter.ViewHolder).setAlpha(0.5f)
             }
         }
     }
@@ -43,6 +42,6 @@ class ItemTouchHelperCallback(
     // 뷰 홀더 클릭을 놔줬을 때 호출되는 콜백
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        (viewHolder as FavoriteViewHolder).setAlpha(1.0f)
+        (viewHolder as FavoriteAddressAdapter.ViewHolder).setAlpha(1.0f)
     }
 }

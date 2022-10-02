@@ -6,34 +6,36 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hoon.microdustapp.data.model.AddressModel
-import com.hoon.microdustapp.databinding.ItemRegionBinding
-import com.hoon.microdustapp.databinding.ItemRegionDrawableViewBinding
-import com.hoon.microdustapp.presentation.adapter.holder.BaseAddressViewHolder
-import com.hoon.microdustapp.presentation.adapter.holder.FavoriteViewHolder
-import com.hoon.microdustapp.presentation.adapter.holder.SearchViewHolder
+import com.hoon.microdustapp.databinding.ItemFavoriteAddressBinding
 import java.util.*
 
-class AddressAdapter<ViewHolder : BaseAddressViewHolder>(
-    val holderType: HolderType,
+class FavoriteAddressAdapter(
     val onClick: (model: AddressModel) -> Unit
-) : ListAdapter<AddressModel, ViewHolder>(diffutils) {
+) : ListAdapter<AddressModel, FavoriteAddressAdapter.ViewHolder>(diffutils) {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
-        return if (holderType == HolderType.TYPE_FAVORITE) {
-            val binding = ItemRegionDrawableViewBinding.inflate(
+    inner class ViewHolder(private val binding: ItemFavoriteAddressBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(model: AddressModel) = with(binding) {
+            textViewRegion.text = model.addressName
+            root.setOnClickListener {
+                onClick(model)
+            }
+        }
+
+        fun setAlpha(alpha: Float) {
+            binding.textViewRegion.alpha = alpha
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding =
+            ItemFavoriteAddressBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-            FavoriteViewHolder(binding, onClick) as ViewHolder
-        } else {
-            val binding =
-                ItemRegionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            SearchViewHolder(binding, onClick) as ViewHolder
-        }
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -47,12 +49,6 @@ class AddressAdapter<ViewHolder : BaseAddressViewHolder>(
     }
 
     companion object {
-
-        enum class HolderType {
-            TYPE_FAVORITE,
-            TYPE_SEARCH
-        }
-
         private val diffutils = object : DiffUtil.ItemCallback<AddressModel>() {
             override fun areItemsTheSame(oldItem: AddressModel, newItem: AddressModel): Boolean {
                 return oldItem.addressName == newItem.addressName
@@ -61,7 +57,6 @@ class AddressAdapter<ViewHolder : BaseAddressViewHolder>(
             override fun areContentsTheSame(oldItem: AddressModel, newItem: AddressModel): Boolean {
                 return oldItem == newItem
             }
-
         }
     }
 }

@@ -11,8 +11,7 @@ import com.hoon.microdustapp.data.model.AddressModel
 import com.hoon.microdustapp.databinding.ActivitySearchRegionBinding
 import com.hoon.microdustapp.presentation.BaseActivity
 import com.hoon.microdustapp.presentation.view.main.MainActivity
-import com.hoon.microdustapp.presentation.adapter.AddressAdapter
-import com.hoon.microdustapp.presentation.adapter.holder.SearchViewHolder
+import com.hoon.microdustapp.presentation.adapter.SearchAddressAdapter
 import org.koin.android.ext.android.inject
 
 class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddressContract.View {
@@ -22,7 +21,7 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
     private val binding: ActivitySearchRegionBinding by lazy {
         ActivitySearchRegionBinding.inflate(layoutInflater)
     }
-    private lateinit var addressAdapter: AddressAdapter<SearchViewHolder>
+    private lateinit var addressAdapter: SearchAddressAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +61,7 @@ class SearchAddressActivity : BaseActivity(TransitionMode.VERTICAL), SearchAddre
         ivClose.setOnClickListener { finish() }
 
         addressAdapter =
-            AddressAdapter(AddressAdapter.Companion.HolderType.TYPE_SEARCH) { model: AddressModel ->
+            SearchAddressAdapter { model: AddressModel ->
                 presenter.addFavoriteAddress(model)
             }
         addressRecyclerView.adapter = addressAdapter

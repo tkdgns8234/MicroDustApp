@@ -47,7 +47,7 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewDescription"
-        tools:listitem="@layout/item_region_drawable_view" />
+        tools:listitem="@layout/item_favorite_address" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

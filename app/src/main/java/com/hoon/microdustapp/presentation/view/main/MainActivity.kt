@@ -40,9 +40,8 @@ import com.hoon.microdustapp.extensions.toast
 import com.hoon.microdustapp.presentation.BaseActivity
 import com.hoon.microdustapp.presentation.adapter.AirPollutionListAdapter
 import com.hoon.microdustapp.presentation.adapter.ForecastVideoAdapter
-import com.hoon.microdustapp.presentation.adapter.AddressAdapter
+import com.hoon.microdustapp.presentation.adapter.FavoriteAddressAdapter
 import com.hoon.microdustapp.presentation.adapter.callback.ItemTouchHelperCallback
-import com.hoon.microdustapp.presentation.adapter.holder.FavoriteViewHolder
 import com.hoon.microdustapp.presentation.view.search.SearchAddressActivity
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
@@ -69,7 +68,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     private lateinit var airPollutionListAdapter: AirPollutionListAdapter
     private lateinit var forecastVideoAdapter: ForecastVideoAdapter
-    private lateinit var addressAdapter: AddressAdapter<FavoriteViewHolder>
+    private lateinit var addressAdapter: FavoriteAddressAdapter
 
     override fun showLoadingProgress() {
         mainBinding.progressBar.visibility = View.VISIBLE
@@ -94,7 +93,7 @@ class MainActivity : BaseActivity(), MainContract.View {
         setGuideLinePosition()
         initPollutionListAdapter()
         initForecastVideoAdapter()
-        initSearchAddressAdapter()
+        initDrawableAddressAdapter()
     }
 
     private fun initPollutionListAdapter() = with(mainViewBinding) {
@@ -110,8 +109,8 @@ class MainActivity : BaseActivity(), MainContract.View {
         forecastVideoViewPager.registerOnPageChangeCallback(pageChangeCallback())
     }
 
-    private fun initSearchAddressAdapter() = with(drawableViewBinding) {
-        addressAdapter = AddressAdapter(AddressAdapter.Companion.HolderType.TYPE_FAVORITE) {
+    private fun initDrawableAddressAdapter() = with(drawableViewBinding) {
+        addressAdapter = FavoriteAddressAdapter() {
             setPosition(it.y, it.x)
             updateUI()
             mainBinding.root.closeDrawer(Gravity.LEFT)
@@ -127,14 +126,14 @@ class MainActivity : BaseActivity(), MainContract.View {
         itemTouchHelperCallback.attachToRecyclerView(recyclerView)
     }
 
-    private fun bindViews() = with(mainBinding) {
-        swipeLayout.setOnRefreshListener {
+    private fun bindViews() {
+        mainBinding.swipeLayout.setOnRefreshListener {
             updateUI()
             mainBinding.swipeLayout.isRefreshing = false
         }
 
         // ScrollView와 SwipeRefreshLayout 함께 사용하기 위함
-        scrollView.viewTreeObserver.addOnScrollChangedListener {
+        mainBinding.scrollView.viewTreeObserver.addOnScrollChangedListener {
             mainBinding.swipeLayout.isEnabled = (mainBinding.scrollView.scrollY == 0)
         }
 
@@ -177,19 +176,17 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun updateForecastUI(forecastItems: List<ForecastModel>) = with(forecastViewBinding) {
-
-        var imageUrlMicroDust: String? = null
-        var imageUrlUltraMicroDust: String? = null
+        val forecastVideoUrls = mutableListOf<String>()
 
         forecastItems.forEach { item ->
             if (item.imageUrlMicroDust.endsWith("fileName=").not()) { // url 쿼리 스트링이 잘 설정되어있는 경우
-                imageUrlMicroDust = item.imageUrlMicroDust
+                forecastVideoUrls.add(item.imageUrlMicroDust)
             }
             if (item.imageUrlUltraMicroDust.endsWith("fileName=").not()) {
-                imageUrlUltraMicroDust = item.imageUrlUltraMicroDust
+                forecastVideoUrls.add(item.imageUrlUltraMicroDust)
             }
         }
-        forecastVideoAdapter.submitList(listOf(imageUrlMicroDust, imageUrlUltraMicroDust))
+        forecastVideoAdapter.submitList(forecastVideoUrls)
 
         // 오늘 예보
         forecastItems.get(0)?.let {
@@ -272,19 +269,20 @@ class MainActivity : BaseActivity(), MainContract.View {
     ) {
         updateAddressFromGps()
         updateTimeText()
-        updateGradeInfo(measureResult)
+        updateGradeUI(measureResult)
         updateAirPollutionList(measureResult)
         mainBinding.tvMeasureStationDesc.text =
             "${stationInfo.stationName} 측정소\n${stationInfo.addr}"
-        mainBinding.layoutMainView.ivRegionList.setOnClickListener {
+        mainBinding.layoutMainView.btnDrawable.setOnClickListener {
             mainBinding.root.openDrawer(Gravity.LEFT)
         }
 
+        // 상단 화면이 모두 로딩된 경우 background, progress bar 표시
         mainViewBinding.backgroundView.visibility = View.VISIBLE
         mainViewBinding.microDustProgressbar.visibility = View.VISIBLE
     }
 
-    private fun updateGradeInfo(measureResult: MeasureResult) = with(mainViewBinding) {
+    private fun updateGradeUI(measureResult: MeasureResult) = with(mainViewBinding) {
         val currentGrade = measureResult.pm10Grade ?: Grade.UNKNOWN
         val currentVal = measureResult.pm10Value
 
@@ -300,11 +298,13 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     private fun updateAddressFromGps() {
-        val geocoder = Geocoder(this, Locale.KOREAN)
+        val geocoder = Geocoder(this, Locale.KOREAN) // 위, 경도 <-> 주소 변환 api
         val address =
             geocoder.getFromLocation(currentLatitude!!, currentLongitude!!, 1).firstOrNull()
 
         if (address != null) {
+            // locality, subLocality: 시, 군, 구
+            // thoroughfare: 동
             mainViewBinding.tvLocation.text = "${address.locality ?: ""} " +
                     "${address.subLocality ?: ""} " +
                     "${address.thoroughfare ?: ""}"

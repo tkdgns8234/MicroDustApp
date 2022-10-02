@@ -23,7 +23,7 @@
         tools:layout_constraintGuide_begin="@dimen/guideline2_top" />
 
     <ImageView
-        android:id="@+id/iv_region_list"
+        android:id="@+id/btn_drawable"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_margin="15dp"
