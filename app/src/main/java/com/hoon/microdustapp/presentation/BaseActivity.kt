@@ -10,6 +10,8 @@ open class BaseActivity(private val transitionMode: TransitionMode = TransitionM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        scope.declare(this)
+
         when (transitionMode) {
             TransitionMode.HORIZONTAL -> overridePendingTransition(
                 R.anim.horizon_enter,
@@ -18,6 +20,11 @@ open class BaseActivity(private val transitionMode: TransitionMode = TransitionM
             TransitionMode.VERTICAL -> overridePendingTransition(R.anim.vertical_enter, R.anim.none)
             TransitionMode.NONE -> Unit
         }
+    }
+
+    override fun onDestroy() {
+        scope.close()
+        super.onDestroy()
     }
 
     override fun finish() {

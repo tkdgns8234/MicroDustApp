@@ -40,7 +40,7 @@
         <entry key="app/src/main/res/drawable/shape_oval_gray.xml" value="0.11" />
         <entry key="app/src/main/res/drawable/shape_oval_white.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/shape_top_radius.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.23251231527093597" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_search_region.xml" value="0.21794871794871795" />
         <entry key="app/src/main/res/layout/item_air_pollution.xml" value="0.17916666666666667" />
         <entry key="app/src/main/res/layout/item_forecast_video_viewpager.xml" value="0.23020833333333332" />
