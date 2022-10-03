@@ -25,8 +25,6 @@ interface MainContract {
 
         fun updateAirPollutionInfo(currentLatitude: Double, currentLongitude: Double)
 
-        fun updateForecastInfo(searchDate: String)
-
         fun insertAddressDB(addressModel: AddressModel)
 
         fun deleteAddressDB(addressModel: AddressModel)

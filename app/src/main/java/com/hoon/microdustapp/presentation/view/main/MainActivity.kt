@@ -53,6 +53,10 @@ import java.util.*
  * 2. tm 좌표값을 기반으로 근처 미세먼지 측정소를 조회
  * 3. 근처 미세먼지 측정소 정보를 통해 (위, 경도 좌표, 측정소 명 등)
  * 4. 현재 대기오염 정보, 대기 예보 정보를 받아옴
+ *
+ * view -> 최대한 UI 또는 activity 종속성이 있는 로직만 처리하도록 구현
+ * presenter -> 비즈니스 로직(핵심 로직을 담고, Repository와 인터페이스 한다.)
+ *
  */
 
 class MainActivity : BaseActivity(), MainContract.View {
@@ -152,7 +156,6 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     private fun updateUI() {
         presenter.updateAirPollutionInfo(currentLatitude!!, currentLongitude!!)
-        updateForecastInfo()
 
         mainBinding.scrollView.animate()
             .alpha(1F)
@@ -167,19 +170,6 @@ class MainActivity : BaseActivity(), MainContract.View {
         cancellationToken.cancel()
         presenter.onDestroyView()
         super.onDestroy()
-    }
-
-    private fun updateForecastInfo() {
-        val calendar = Calendar.getInstance()
-        calendar.time = Date()
-
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        if (hour < 5) {
-            // 5am 이전인경우 하루 이전 관측 정보를 보여준다. (서버 관측 정보가 업데이트 되지 않았기 때문)
-            calendar.add(Calendar.DATE, -1)
-        }
-        val searchDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
-        presenter.updateForecastInfo(searchDate)
     }
 
     override fun updateForecastUI(forecastItems: List<ForecastModel>) = with(forecastViewBinding) {
@@ -408,11 +398,6 @@ class MainActivity : BaseActivity(), MainContract.View {
     private fun setPosition(latitude: Double, longitude: Double) {
         currentLatitude = latitude
         currentLongitude = longitude
-    }
-
-    private val errorHandler = CoroutineExceptionHandler { _, e ->
-        toast("미세먼지 측정 정보를 불러오는데 실패하였습니다.")
-        e.printStackTrace()
     }
 
     private fun pageChangeCallback(): ViewPager2.OnPageChangeCallback {
