@@ -19,8 +19,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "KAKAO_API_KEY", properties['KAKAO_API_KEY']
-        buildConfigField "String", "AIR_KOREA_API_KEY", properties['AIR_KOREA_API_KEY']
+        buildConfigField "String", "KAKAO_API_KEY", '"insert_your_key"'
+        buildConfigField "String", "AIR_KOREA_API_KEY", '"insert_your_key"'
     }
 
     buildTypes {
