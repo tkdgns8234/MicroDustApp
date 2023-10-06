@@ -30,8 +30,8 @@
 - `MVP`
 
 # 🤔 Learned
-- `MVP` 패턴을 학습하고 실제로 앱에 적용해 보기
-- `Coroutine` 사용법을 숙지하고 실제 앱에 적용해 보기
+- `MVP` 패턴을 학습하고 실제로 앱에 적용해 보기 [블로그 링크](https://tkdgns8234.tistory.com/170)
+- `Coroutine` 사용법을 숙지하고 실제 앱에 적용해 보기 [블로그 링크](https://tkdgns8234.tistory.com/178)
 - `Flow` 를 이용해 `Room` 변경 내용을 Trace 하도록 구현하기
 - **다양한 해상도별 UI 대응하기**
     - dimens 디렉터리를 통해 해상도별 UI 대응해 보기
